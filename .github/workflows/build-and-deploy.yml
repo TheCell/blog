@@ -70,7 +70,7 @@ jobs:
             --site "https://newblog.thecell.eu/"
         working-directory: ${{ env.BUILD_PATH }}
         
-      - run: ls -R my-artifact
+      - run: ls -R dist
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -94,7 +94,7 @@ jobs:
       with:
         name: Build
         
-    - run: ls -R my-artifact
+    - run: ls -R
     
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
