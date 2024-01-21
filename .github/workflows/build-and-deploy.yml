@@ -87,7 +87,10 @@ jobs:
     steps:
     - name: Download artifact
       uses: actions/download-artifact@v3
-      
+      with:
+        path: ${{ env.BUILD_PATH }}
+        name: Build
+        
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
