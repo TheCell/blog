@@ -93,7 +93,11 @@ jobs:
     - run: ls -R
             
     - name: extract artifact for deployment
-      run: tar –xvzf artifact.tar –C /dist
+    # x – instructs tar to extract the files from the zipped file
+    # v – means verbose, or to list out the files it’s extracting
+    # z – instructs tar to decompress the files – without this, you’d have a folder full of compressed files
+    # f – tells tar the filename you want it to work on
+      run: tar -xvzf artifact.tar -c /dist
           
     - run: ls -R
     
