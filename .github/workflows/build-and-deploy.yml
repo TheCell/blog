@@ -89,6 +89,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: Build
+        ftp_secret: ${{ secrets.FTPPASSWORD }}
 
     - run: mkdir dist
             
@@ -105,9 +106,9 @@ jobs:
       with:
         server: newblog.thecell.eu
         username: newblogftpuser
-        password: ${{ secrets.FTPPASSWORD }}
+        password: "$ftp_secret"
         local-dir: dist/
-        
+        dry-run: true
 #  deploy:
 #    environment:
 #      name: github-pages
