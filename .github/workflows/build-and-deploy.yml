@@ -90,8 +90,7 @@ jobs:
       with:
         name: Build
 
-    - run: ls -R
-    - run: file artifact.tar
+    - run: mkdir dist
             
     - name: extract artifact for deployment
     # x – instructs tar to extract the files from the zipped file
