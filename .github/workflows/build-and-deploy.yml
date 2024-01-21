@@ -102,5 +102,6 @@ jobs:
         server: newblog.thecell.eu
         username: newblogftpuser
         password: ${{ secrets.FTPPASSWORD }}
-        protocol: ftps
+        protocol: ftp
+        port: 21
         local-dir: dist/
