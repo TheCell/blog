@@ -73,13 +73,20 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.BUILD_PATH }}/dist
+          path: dist
+          name: Build
+          #path: ${{ env.BUILD_PATH }}/dist
   web-deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    permissions:
+        contents: write
+    needs: build
     steps:
     - name: Download artifact
       uses: actions/download-artifact@v3
+      with:
+        name: Build
       
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
