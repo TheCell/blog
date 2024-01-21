@@ -107,7 +107,6 @@ jobs:
         username: newblogftpuser
         password: ${{ secrets.FTPPASSWORD }}
         local-dir: dist/
-        dry-run: true
         
 #  deploy:
 #    environment:
