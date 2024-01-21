@@ -99,19 +99,7 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        server: newblog.thecell.eu
+        server: 80.74.128.5
         username: newblogftpuser
         password: ${{ secrets.FTPPASSWORD }}
         local-dir: dist/
-        dry-run: true
-#  deploy:
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
-#    needs: build
-#    runs-on: ubuntu-latest
-#    name: Deploy
-#    steps:
-#      - name: Deploy to GitHub Pages
-#        id: deployment
-#        uses: actions/deploy-pages@v4
