@@ -71,11 +71,11 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
         
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: ${{ env.BUILD_PATH }}/dist
           name: Build
-          #path: ${{ env.BUILD_PATH }}/dist
+
   web-deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -84,7 +84,7 @@ jobs:
     needs: build
     steps:
     - name: Download artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Build
       
@@ -95,11 +95,6 @@ jobs:
         username: newblogftpuser
         password: ${{ secrets.FTPPASSWORD }}
         dry-run: true
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          fileToExclude.txt
         
 #  deploy:
 #    environment:
