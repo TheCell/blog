@@ -1,7 +1,3 @@
-# Sample workflow for building and deploying an Astro site to GitHub Pages
-#
-# To get started with Astro see: https://docs.astro.build/en/getting-started/
-#
 name: Deploy Astro site to Pages
 
 on:
@@ -89,7 +85,6 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: Build
-        ftp_secret: ${{ secrets.FTPPASSWORD }}
 
     - run: mkdir dist
             
@@ -106,7 +101,7 @@ jobs:
       with:
         server: newblog.thecell.eu
         username: newblogftpuser
-        password: "$ftp_secret"
+        password: ${{ secrets.FTPPASSWORD }}
         local-dir: dist/
         dry-run: true
 #  deploy:
