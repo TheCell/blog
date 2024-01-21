@@ -92,8 +92,8 @@ jobs:
 
     - run: ls -R
             
-    - name: unzip artifact for deployment
-      run: unzip ./artifact.tar
+    - name: extract artifact for deployment
+      run: tar –xvzf artifact.tar –C /dist
           
     - run: ls -R
     
@@ -103,6 +103,7 @@ jobs:
         server: newblog.thecell.eu
         username: newblogftpuser
         password: ${{ secrets.FTPPASSWORD }}
+        local-dir: dist/
         dry-run: true
         
 #  deploy:
