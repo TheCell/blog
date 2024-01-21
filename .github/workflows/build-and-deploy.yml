@@ -99,7 +99,8 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        server: 80.74.128.5
+        server: newblog.thecell.eu
         username: newblogftpuser
         password: ${{ secrets.FTPPASSWORD }}
+        protocol: ftps
         local-dir: dist/
