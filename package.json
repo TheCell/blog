@@ -16,9 +16,9 @@
 		"astro-b"
 	],
 	"scripts": {
-		"dev": "npx tinacms dev -c \"astro dev\"",
+		"dev": "tinacms dev -c \"astro dev\"",
 		"start": "astro dev",
-		"build": "tinacms build && astro build",
+		"build": "tinacms build -c \"astro build\"",
 		"sync": "astro sync",
 		"preview": "astro preview",
 		"postbuild": "pagefind --site dist",
