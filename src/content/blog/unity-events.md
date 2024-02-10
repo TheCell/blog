@@ -2,7 +2,8 @@
 title: 'Unity Events'
 description: 'An easy Framework for UnityEvents'
 pubDate: 'Feb 02 2024'
-heroImage: '/unity-events.png'
+heroImage: '../../assets/images/unity-events.png'
+category: 'Gamedev'
 tags: ['unity', 'programming']
 ---
 
@@ -83,7 +84,7 @@ public class Health : MonoBehaviour
 ```
 
 And this is how the component looks in the inspector. I linked a script that lets me respawn and one to play different particle effects. Note that I don't care about the value emitted to play the particle effect. However, I do care about the value in the debugger log. 
-![unity event usage Inspector screenshot](/unity-event-in-action.png)
+![unity event usage Inspector screenshot](../../assets/images/unity-event-in-action.png)
 
 The debugger script is just an example and looks like this:
 ```csharp
