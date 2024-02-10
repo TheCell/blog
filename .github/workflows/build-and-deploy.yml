@@ -21,6 +21,8 @@ concurrency:
 
 env:
   BUILD_PATH: "." # default value when not using subfolders
+  NEXT_PUBLIC_TINA_CLIENT_ID: ${{ secrets.TINA_CLIENT_ID }}
+  TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
   # BUILD_PATH: subfolder
 
 jobs:
@@ -62,7 +64,7 @@ jobs:
         
       - name: Build with Astro
         run: |
-          ${{ steps.detect-package-manager.outputs.runner }} astro build \
+          ${{ steps.detect-package-manager.outputs.runner }} tinacms build && astro build \
             --site "https://newblog.thecell.eu/"
         working-directory: ${{ env.BUILD_PATH }}
         
