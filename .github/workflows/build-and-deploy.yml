@@ -64,7 +64,7 @@ jobs:
         env:
           NEXT_PUBLIC_TINA_CLIENT_ID: ${{ secrets.TINA_CLIENT_ID }}
           TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
-          run: npm tinacms build
+        run: npm tinacms build
 
       - name: Build with Astro
         run: |
