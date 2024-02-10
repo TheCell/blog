@@ -2,13 +2,12 @@ import { CATEGORIES } from '../src/data/categories.ts'
 import { defineConfig } from 'tinacms'
 
 // Your hosting provider likely exposes this as an environment variable
-const branch = process.env.HEAD || process.env.VERCEL_GIT_COMMIT_REF || 'main'
+const branch = 'main'
 
 export default defineConfig({
 	branch,
 	clientId: 'ef88b371-5a16-4aca-a62a-ed13c0cb8b0f',
 	token: 'cfa41d0d946c5372c5d4b5dbe89d0b4ca3937ffe',
-
 	build: {
 		outputFolder: 'admin',
 		publicFolder: 'public'
