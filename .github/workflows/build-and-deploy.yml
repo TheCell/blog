@@ -71,6 +71,10 @@ jobs:
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "https://newblog.thecell.eu/"
         working-directory: ${{ env.BUILD_PATH }}
+
+      - name: Build Pagefind
+        run: npm postbuild
+        working-directory: ${{ env.BUILD_PATH }}
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
