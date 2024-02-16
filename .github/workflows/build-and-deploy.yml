@@ -73,7 +73,7 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Build Pagefind
-        run: npm postbuild
+        run: npm run postbuild
         working-directory: ${{ env.BUILD_PATH }}
         
       - name: Upload artifact
