@@ -2,7 +2,7 @@
 title: 'Unity Events'
 description: 'An easy Framework for UnityEvents'
 pubDate: 'Feb 02 2024'
-heroImage: '../../assets/images/unity-events.png'
+image: '../../assets/images/unity-events.png'
 category: 'Gamedev'
 tags: ['unity', 'programming']
 ---
