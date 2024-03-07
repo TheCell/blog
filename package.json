@@ -29,7 +29,7 @@
 	},
 	"dependencies": {
 		"@astrojs/rss": "^4.0.5",
-		"astro": "4.4.10",
+		"astro": "4.4.14",
 		"astro-font": "^0.0.77",
 		"tinacms": "^1.5.28"
 	},
@@ -38,6 +38,7 @@
 		"@astrojs/sitemap": "3.1.1",
 		"@astrojs/tailwind": "5.1.0",
 		"@pagefind/default-ui": "^1.0.4",
+		"shikiji-transformers": "^0.10.2",
 		"@tailwindcss/typography": "0.5.10",
 		"@tinacms/cli": "^1.5.39",
 		"@types/node": "^20.11.24",
