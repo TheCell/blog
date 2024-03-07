@@ -1,0 +1,41 @@
+---
+title: 'Unity Events'
+description: 'Infert form types from interface'
+pubDate: 'Mar 07 2024'
+image: '../../assets/images/placeholder-hero.jpg'
+category: 'Programming'
+tags: ['Typescript', 'Angualar']
+---
+TBD 
+```Typescript
+export interface MigrationExpertOrIcDto { 
+    id?: string | null;
+    user: UserDto;
+    personalNumberFromAnalytics: number;
+    hasConflict: boolean;
+    isPrimary: boolean;
+    roleId: number;
+    version?: number | null;
+}
+``` 
+
+```Typescript
+type MigrationExpertOrIc = {
+  [Property in keyof MigrationExpertOrIcDto]: FormControl<MigrationExpertOrIcDto[Property]>;
+}
+``` 
+asdf
+```Typescript
+public form: FormGroup<MigrationExpertOrIc>;
+``` 
+```Typescript
+this.form = this.formBuilder.group<MigrationExpertOrIc>({
+      id: new FormControl(null),
+      user: new FormControl(null),
+      personalNumberFromAnalytics: new FormControl(null),
+      hasConflict: new FormControl(null),
+      isPrimary: new FormControl(null),
+      roleId: new FormControl(null),
+      version: new FormControl(null)
+    });
+``` 
