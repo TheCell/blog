@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content'
 import BlogPost from '@/layouts/BlogPost'
 import Code from '@/components/mdx/Code'
+import MyCode from '@/components/MyCode'
 import ListRelatedPosts from '@/components/ListRelatedPosts'
 import Share from '@/components/Share'
 import TableOfContents from '@/components/TableOfContents'
@@ -42,8 +43,7 @@ const disqusEnabled = disqusConfig.enabled
 	id={post.id}
 	data={post.data}
 	headings={headings}
-	readTime={remarkPluginFrontmatter.minutesRead}
->
+	readTime={remarkPluginFrontmatter.minutesRead}>
 	<div class='grid grid-cols-1 md:grid-cols-[20%_auto] gap-10 mt-8'>
 		<!-- aside  -->
 		<aside class='md:flex flex-col gap-8 hidden'>
@@ -56,7 +56,7 @@ const disqusEnabled = disqusConfig.enabled
 		<!-- post -->
 		<article class='max-w-full w-full'>
 			<div class='prose prose-lg md:prose-xl dark:prose-invert mb-12 min-w-full'>
-				<Content components={{ pre: Code, SButton }} />
+				<Content components={{ pre: MyCode, SButton }} />
 			</div>
 
 			<!-- related posts -->

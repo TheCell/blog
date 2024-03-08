@@ -1,10 +1,10 @@
 ---
-title: 'Unity Events'
-description: 'An easy Framework for UnityEvents'
-pubDate: 'Feb 02 2024'
-image: '../../assets/images/unity-events.png'
-category: 'Gamedev'
-tags: ['unity', 'programming']
+title: 'Code Highlight Test md'
+description: 'test for md files'
+pubDate: 'Mar 08 2024'
+image: '../../assets/images/placeholder-social.jpg'
+category: 'Programming'
+tags: ['programming', 'astro', 'shiki']
 ---
 
 An example of how to implement your own Unity events. This is very practical to link behaviors up via inspector UI instead of code. I have used the Inspector to link objects a lot more recently. It is more flexible compared to linking via code. When presented with a new scene, you can understand much better what is being called and how things are interlocked this way. You don't need to go through the code.
