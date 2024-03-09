@@ -16,7 +16,7 @@ export default defineConfig({
 	markdown: {
 		remarkPlugins: [remarkReadingTime],
 		drafts: true,
-		syntaxHighlight: "shiki",
+		syntaxHighlight: 'shiki',
 		shikiConfig: {
 			themes: {
 				light: 'github-light',
