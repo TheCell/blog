@@ -46,3 +46,17 @@ public class Health : MonoBehaviour
     }
 }
 ```
+
+And we can start line numbering from 1 or any other number by including `style="--start: xx;"` in our code block.
+TBD: https://github.com/shikijs/shiki/issues/3#issuecomment-881312748
+```csharp
+// DialogueUI.cs
+public override void DialogueStarted ()
+{
+    // Enable the dialogue controls.
+    if (dialogueContainer != null)
+        dialogueContainer.SetActive(true);
+
+    onDialogueStart?.Invoke();            
+}
+```

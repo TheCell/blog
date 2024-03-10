@@ -116,7 +116,7 @@ code .diff.remove::before {
 
 code {
 	counter-reset: step;
-	counter-increment: step 0;
+	counter-increment: step calc(var(--start, 1) - 1);
 }
 
 code .line::before {
