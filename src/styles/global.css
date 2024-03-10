@@ -44,6 +44,7 @@
 
 pre.astro-code {
 	line-height: 1.2rem;
+	padding-left: 15px;
 }
 
 .prose code {
@@ -74,9 +75,7 @@ pre:hover .diff.remove,
 pre:hover .diff.add::before,
 pre:hover .diff.remove::before {
 	background-color: unset;
-	content: unset;
 }
-
 
 code .highlighted {
 	background-color:var(--line-highlight-color);
@@ -113,4 +112,19 @@ code .diff.add::before {
 code .diff.remove::before {
 	color: var(--line-diff-remove-symbol-color);
 	content: "-";
+}
+
+code {
+	counter-reset: step;
+	counter-increment: step 0;
+}
+
+code .line::before {
+	content: counter(step);
+	counter-increment: step;
+	width: 1.7rem;
+	margin-right: 1rem;
+	display: inline-block;
+	text-align: right;
+	color: #738a9466
 }
