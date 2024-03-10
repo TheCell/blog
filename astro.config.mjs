@@ -3,7 +3,7 @@ import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwind from '@astrojs/tailwind'
 import { remarkReadingTime } from './src/utils/readTime.ts'
-// import { transformerNotationHighlight, transformerNotationFocus } from "@shikijs/transformers";
+// import { transformerNotationHighlight, transformerNotationFocus, transformerNotationErrorLevel } from "@shikijs/transformers";
 import { transformerNotationHighlight, transformerNotationFocus, transformerNotationErrorLevel } from "shikiji-transformers";
 
 export default defineConfig({
