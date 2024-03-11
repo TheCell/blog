@@ -1,0 +1,105 @@
+---
+image: /src/assets/images/typescript-placeholder.jpg
+category: Programming
+description: >-
+  A brief description of what is needed to have a webservice work with angular
+  17.
+pubDate: 2024-03-10T23:00:00.000Z
+tags:
+  - Angular
+title: Webservice with Angular 17
+---
+
+```typescript
+// dummy.service.ts
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Product } from './product';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DummyService {
+
+  constructor(private http: HttpClient) { }
+
+  public getProducts(): Observable<Array<Product>> {
+    const endpoint =
+      'https://hub.dummyapis.com/products?noofRecords=5&idStarts=1001&currency=usd';
+    return this.http.get<Array<Product>>(endpoint);
+  }
+
+}
+
+```
+
+```typescript
+// product.ts
+export interface Product {
+  id: number;
+  description: string;
+  name: string;
+  price: number;
+}
+```
+
+It's important to provide the HttpClient in your Angular 17 configuration. If you forget this step you will get something like this:
+
+ERROR NullInjectorError: R3InjectorError(Standalone\[\_ProductsListComponent])\[\_DummyService -> \_DummyService -> \_DummyService -> \_HttpClient -> \_HttpClient]: 
+  NullInjectorError: No provider for \_HttpClient!
+
+```typescript
+// app.config.ts
+export const appConfig: ApplicationConfig = { // [!code focus]
+  providers: [
+    provideHttpClient(), // [!code focus]
+    provideRouter(
+      routes) // withDebugTracing()
+  ]
+};
+
+// main.ts
+bootstrapApplication(AppComponent, appConfig)
+  .catch((err) => console.error(err));
+
+```
+
+or if you use the module based approach:
+
+```typescript
+// app.module.ts
+import { HttpClientModule } from '@angular/common/http'; // [!code focus]
+
+// app.module.ts
+@NgModule({ // [!code focus]
+  declarations: [
+    AppComponent,
+    ...
+  ],
+  imports: [ // [!code focus]
+    BrowserModule,
+    HttpClientModule, // [!code focus]
+    AppRoutingModule,
+    ...
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+  public constructor(viewportService: ViewportService) {
+    viewportService.attach();
+  }
+}
+```
+
+And this is how you use it:
+
+```typescript
+// just-a.component.ts
+constructor(private dummyService: DummyService) {
+  this.dummyService.getProducts().subscribe((resp: Array<Product>) => {
+    console.log(resp);
+  });
+}
+```
