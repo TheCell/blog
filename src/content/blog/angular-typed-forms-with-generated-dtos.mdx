@@ -30,8 +30,10 @@ type MigrationExpertOrIc = {
 }
 ``` 
 
-And then you can use the type to create a form like this:
+And then you can use the type to create a form like this.
+Note that We are not using the formBuilder completeley because we might have nullable and nonnullable fields mixed.
 ```typescript
+// migration-expert-or-ic.component.ts
 public form: FormGroup<MigrationExpertOrIc>;
 
 //...
@@ -47,3 +49,32 @@ public ngOnInit(): void {
   version: new FormControl(null)
 });
 ``` 
+
+If we have an explicit form and all properties are non nullable it can look like this:
+```typescript
+// audio-buttons.component.ts
+import { Component } from '@angular/core';
+import { AudioService } from '../services/audio.service';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+
+interface VolumeForm { // [!code focus]
+  volume: FormControl<number>; // [!code focus]
+} // [!code focus]
+
+@Component({
+  selector: 'app-audio-buttons',
+  templateUrl: './audio-buttons.component.html',
+  styleUrls: ['./audio-buttons.component.scss']
+})
+export class AudioButtonsComponent {
+  public volumeForm: FormGroup<VolumeForm>; // [!code focus]
+
+  public constructor(
+    private audioService: AudioService,
+    private formbuilder: FormBuilder) { // [!code focus]
+      this.volumeForm = this.formbuilder.nonNullable.group({ // [!code focus]
+        volume: [1] // [!code focus]
+      }); // [!code focus]
+  }
+}
+```
