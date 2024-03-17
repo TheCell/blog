@@ -18,10 +18,7 @@ export default defineConfig({
 		drafts: true,
 		syntaxHighlight: 'shiki',
 		shikiConfig: {
-			themes: {
-				light: 'github-light',
-				dark: 'github-dark-dimmed',
-			  },
+			theme: 'github-dark-dimmed',
 			wrap: true,	
 			transformers: [transformerNotationHighlight(), transformerNotationFocus(), transformerNotationErrorLevel(), transformerNotationDiff()]
 		}
