@@ -5,11 +5,16 @@ import Footer from '@/components/Footer'
 import ProviderTheme from '@/components/ProviderTheme'
 import ProviderAnimations from '@/components/ProviderAnimations'
 import EditBlog from '@/components/editBlog'
+import { siteConfig } from '@/site-config'
 const { title, description, image, articleDate } = Astro.props
+
+const titleSeparator = '•'
+const siteTitle = `${title} ${titleSeparator} ${siteConfig.title}`;
 ---
 
 <html lang='en' class='scroll-smooth'>
 	<head>
+		<title>{ siteTitle }</title>
 		<BaseHead title={title} description={description} ogImage={image} articleDate={articleDate} />
 		<ProviderTheme />
 		<ProviderAnimations />
