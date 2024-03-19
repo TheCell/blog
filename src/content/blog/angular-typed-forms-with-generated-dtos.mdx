@@ -6,6 +6,7 @@ image: '../../assets/images/angular-placeholder.jpg'
 category: 'Programming'
 tags: ['Typescript', 'Angular']
 ---
+
 If you need to create a form in Angular, you can use the `FormGroup` and `FormControl` classes from `@angular/forms`. Meanwhile Angular supports typed forms.
 If you just want to create a form which holds all values from the DTO you can use the following approach.
 
@@ -20,18 +21,19 @@ export interface MigrationExpertOrIcDto {
     roleId: number;
     version?: number | null;
 }
-``` 
+```
+In your Angular component you can define a new type like this: (You can find some documentation for this here: [https://www.typescriptlang.org/docs/handbook/2/mapped-types.html](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html))
 
-In your Angular component you can define a new type like this:
 ```typescript
 // migration-expert-or-ic.component.ts
 type MigrationExpertOrIc = {
   [Property in keyof MigrationExpertOrIcDto]: FormControl<MigrationExpertOrIcDto[Property]>;
 }
-``` 
+```
 
 And then you can use the type to create a form like this.
 Note that We are not using the formBuilder completeley because we might have nullable and nonnullable fields mixed.
+
 ```typescript
 // migration-expert-or-ic.component.ts
 public form: FormGroup<MigrationExpertOrIc>;
@@ -48,9 +50,10 @@ public ngOnInit(): void {
   roleId: new FormControl(null),
   version: new FormControl(null)
 });
-``` 
+```
 
 If we have an explicit form and all properties are non nullable it can look like this:
+
 ```typescript
 // audio-buttons.component.ts
 import { Component } from '@angular/core';
