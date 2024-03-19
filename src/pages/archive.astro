@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TitlePage from '../components/TitlePage.astro';
+import { getArchive } from '../utils';
+import type { Archive } from '../utils';
+import ArchiveListEntry from '../components/ArchiveListEntry.astro';
+
+type ArchiveListEntryType = Omit<Archive, 'slug'> & { url: string };
+
+interface AccumulatedEntries {
+	year: number;
+	entries: Array<ArchiveListEntryType>;
+}
+
+const archive = await getArchive();
+let year = new Date().getFullYear();
+let entriesByYear: Array<ArchiveListEntryType> = [];
+let accumulatedEntries: Array<AccumulatedEntries> = [];
+	
+archive.sort((a, b) => b.date.getTime() - a.date.getTime()).forEach((entry) => {
+	let date = new Date(entry.date);
+	
+	if (date.getFullYear() != year) {
+		accumulatedEntries.push({ year, entries: entriesByYear });
+		entriesByYear = [];
+		year = date.getFullYear();
+	}
+		
+	let listEntry: ArchiveListEntryType = {
+		title: entry.title,
+		date: entry.date,
+		description: entry.description,
+		url: 'post/' + entry.slug
+	};
+	entriesByYear.push(listEntry);
+});
+
+accumulatedEntries.push({ year, entries: entriesByYear });
+entriesByYear = [];
+
+---
+
+<BaseLayout>
+	<TitlePage title="Archive" />
+	<div class="archiveContainer">
+	{
+		accumulatedEntries.map((accumulatedEntry) => {
+			return <div class="archiveYear">{accumulatedEntry.year}</div>
+			<div class="archiveListEntries">{ accumulatedEntry.entries.map((entry) => {
+				return <ArchiveListEntry {...entry} url={entry.url} ></ArchiveListEntry>
+			}) }</div>
+		})
+	}
+	</div>
+
+</BaseLayout>

@@ -128,3 +128,32 @@ code .line::before {
 	text-align: right;
 	color: #738a9466
 }
+
+.archiveContainer {
+	display: grid;
+	grid-template-columns: 150px 1fr;
+	grid-template-rows: auto;
+	grid-gap: 2em 0px;
+}
+
+.archiveYear {
+	font-size: 1.6em;
+}
+
+
+.archiveListEntry {
+	border-bottom: 2px dotted;
+	border-color: #ffffffb6;
+	margin-bottom: 20px;
+}
+
+.archiveListEntry > span {
+	display: block;
+	font-size: 0.8em;
+	color: #ffffffb6;
+}
+
+.archiveListEntryDate {
+	display: block;
+	float: right;
+}

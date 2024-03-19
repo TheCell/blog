@@ -1,0 +1,21 @@
+---
+const { url, title, description, date } = Astro.props;
+
+export interface Props {
+	date: Date,
+    url: string,
+    title: string,
+    description: string
+}
+---
+<div class="archiveListEntryDate">
+    {
+        date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric'})
+    }
+</div>
+<div class="archiveListEntry">
+    <a href={url}>{title}</a>
+    <span>{description}</span>
+</div>
