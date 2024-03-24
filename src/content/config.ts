@@ -17,6 +17,25 @@ const blog = defineCollection({
 			tags: z.array(z.string()),
 			draft: z.boolean().default(false)
 		})
-})
+});
 
-export const collections = { blog }
+const wp_blog = defineCollection({
+	schema: ({ image }) =>
+		z.object({
+			title: z.string().max(100),
+			description: z.string().default('This was exported from WordPress'),
+			category: z.enum(CATEGORIES).default(CATEGORIES[11]),
+			date: z
+				.string()
+				.or(z.date())
+				.transform((val) => new Date(val)),
+			coverImage: image().optional(),
+			tags: z.array(z.string()).default([]),
+			draft: z.boolean().default(false)
+		})
+});
+
+export const collections = {
+	blog,
+	wp_blog
+}
