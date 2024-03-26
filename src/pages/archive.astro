@@ -30,7 +30,7 @@ archive.sort((a, b) => b.date.getTime() - a.date.getTime()).forEach((entry) => {
 		title: entry.title,
 		date: entry.date,
 		description: entry.description,
-		url: entry.isWPExport ? 'wp_blog/'+ entry.slug: 'post/' + entry.slug
+		url: entry.isWPExport ? '../wp_blog/'+ entry.slug: '../post/' + entry.slug
 	};
 	entriesByYear.push(listEntry);
 });
