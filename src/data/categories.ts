@@ -10,5 +10,6 @@ export const CATEGORIES = [
 	'Personal',
 	'Portfolio',
 	'Quotes',
-	'Test'
+	'Test',
+	'WP_Export',
 ] as const

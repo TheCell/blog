@@ -5,7 +5,7 @@ import { getArchive } from '../utils';
 import type { Archive } from '../utils';
 import ArchiveListEntry from '../components/ArchiveListEntry.astro';
 
-type ArchiveListEntryType = Omit<Archive, 'slug'> & { url: string };
+type ArchiveListEntryType = Pick<Archive, 'date' | 'description' | 'title'> & { url: string };
 
 interface AccumulatedEntries {
 	year: number;
@@ -30,7 +30,7 @@ archive.sort((a, b) => b.date.getTime() - a.date.getTime()).forEach((entry) => {
 		title: entry.title,
 		date: entry.date,
 		description: entry.description,
-		url: 'post/' + entry.slug
+		url: entry.isWPExport ? '../wp_blog/'+ entry.slug: '../post/' + entry.slug
 	};
 	entriesByYear.push(listEntry);
 });
