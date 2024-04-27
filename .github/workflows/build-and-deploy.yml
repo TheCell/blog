@@ -1,4 +1,4 @@
-name: Deploy Astro site to Pages
+name: Build and deploy Astro site
 
 on:
   # Runs on pushes targeting the default branch
