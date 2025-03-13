@@ -15,10 +15,9 @@
 		"astro-b"
 	],
 	"scripts": {
-		"dev": "tinacms dev -c \"astro dev\"",
 		"start": "astro dev",
-		"build": "tinacms build -c \"astro build\"",
-		"tinacms": "tinacms",
+		"dev": "astro dev",
+		"build": "astro build",
 		"sync": "astro sync",
 		"preview": "astro preview",
 		"postbuild": "pagefind --site dist",
@@ -28,18 +27,16 @@
 	},
 	"dependencies": {
 		"@astrojs/rss": "^4.0.5",
-		"astro": "4.5.5",
-		"astro-font": "^0.0.78",
-		"tinacms": "^1.5.28"
+		"astro": "^5.5.2",
+		"astro-font": "^0.0.78"
 	},
 	"devDependencies": {
-		"@astrojs/mdx": "2.2.2",
-		"@astrojs/sitemap": "3.1.1",
-		"@astrojs/tailwind": "5.1.0",
+		"@astrojs/mdx": "^4.2.0",
+		"@astrojs/sitemap": "3.1.6",
+		"@astrojs/tailwind": "^5.1.5",
 		"@pagefind/default-ui": "^1.0.4",
-		"@tailwindcss/typography": "0.5.10",
-		"@tinacms/cli": "^1.5.42",
-		"@types/node": "^20.11.30",
+		"@tailwindcss/typography": "0.5.13",
+		"@types/node": "^20.14.9",
 		"@typescript-eslint/parser": "^7.3.1",
 		"clsx": "2.1.0",
 		"eslint": "^8.57.0",
