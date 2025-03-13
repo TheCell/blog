@@ -22,7 +22,7 @@ export const getWPPosts = async (max?: number) => {
 
 export const getTags = async () => {
 	const posts = await getCollection('blog')
-	const tags = new Set()
+	const tags = new Set<string>()
 	posts.forEach((post) => {
 		post.data.tags.forEach((tag) => {
 			tags.add(tag.toLowerCase())
