@@ -4,11 +4,11 @@ import PostCard from '@/components/PostCard'
 import { cn } from '@/utils'
 
 type Props = {
-	posts: CollectionEntry<'blog'>[]
+	posts: CollectionEntry<'wp_blog'>[]
 	FirstBig?: boolean
 }
 
-const { posts, FirstBig = false } = Astro.props
+const { posts, FirstBig = false } = Astro.props;
 ---
 
 <section
@@ -18,12 +18,15 @@ const { posts, FirstBig = false } = Astro.props
 	{
 		posts.map(async (post) => {
 			const { remarkPluginFrontmatter } = await post.render();
+			const data = post.data;
+			data.pubDate = new Date(post.data.date);
+			data.image = data.coverImage;
 
 			return (
 				<PostCard
 					id={post.id}
-					data={post.data}
-					isArchivalPost={false}
+					data={data}
+					isArchivalPost={true}
 					slug={post.slug}
 					readTime={remarkPluginFrontmatter.minutesRead} />
 			)

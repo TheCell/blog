@@ -29,7 +29,13 @@ const wp_blog = defineCollection({
 				.string()
 				.or(z.date())
 				.transform((val) => new Date(val)),
+			pubDate: z
+				.string()
+				.or(z.date())
+				.transform((val) => new Date(val))
+				.optional(),
 			coverImage: image().optional(),
+			image: image().optional(),
 			tags: z.array(z.string()).default([]),
 			draft: z.boolean().default(false)
 		})
