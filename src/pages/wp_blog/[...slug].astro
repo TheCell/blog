@@ -12,14 +12,15 @@ import Disqus from '@/components/Disqus'
 import { disqusConfig } from '@/data/disqus.config'
 import WPBlogPost from '@/layouts/WPBlogPost'
 
-const posts = await getCollection('wp_blog')
+const posts = await getCollection('wp_blog');
+
 export async function getStaticPaths() {
 	const posts = await getWPPosts()
 
 	return posts.map((post) => ({
 		params: { slug: post.slug },
 		props: post
-	}))
+	}));
 }
 type Props = CollectionEntry<'wp_blog'>
 
