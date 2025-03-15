@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout'
+import ListWPPosts from '@/components/ListWPPosts'
+import TitlePage from '@/components/TitlePage'
+import { getWPTags, getWPPostByTag } from '@/utils'
+
+export async function getStaticPaths() {
+	const tags = await getWPTags();
+
+	return tags.map((tag) => ({
+		params: { tag },
+		props: { tag }
+	}));
+}
+
+const { tag } = Astro.props
+
+const posts = await getWPPostByTag(tag)
+---
+
+<BaseLayout title={tag}>
+	<TitlePage title={tag} />
+	<ListWPPosts posts={posts} />
+</BaseLayout>

@@ -25,7 +25,19 @@ export const getTags = async () => {
 	const tags = new Set<string>();
 	posts.forEach((post) => {
 		post.data.tags.forEach((tag) => {
-			tags.add(tag.toLowerCase())
+			tags.add(tag.toLowerCase());
+		})
+	});
+
+	return Array.from(tags);
+}
+
+export const getWPTags = async () => {
+	const posts = await getCollection('wp_blog');
+	const tags = new Set<string>();
+	posts.forEach((post) => {
+		post.data.tags.forEach((tag) => {
+			tags.add(tag.toLowerCase());
 		})
 	});
 
@@ -34,6 +46,14 @@ export const getTags = async () => {
 
 export const getPostByTag = async (tag: string) => {
 	const posts = await getPosts();
+	const lowercaseTag = tag.toLowerCase();
+	return posts.filter((post) => {
+		return post.data.tags.some((postTag) => postTag.toLowerCase() === lowercaseTag)
+	});
+}
+
+export const getWPPostByTag = async (tag: string) => {
+	const posts = await getWPPosts();
 	const lowercaseTag = tag.toLowerCase();
 	return posts.filter((post) => {
 		return post.data.tags.some((postTag) => postTag.toLowerCase() === lowercaseTag)

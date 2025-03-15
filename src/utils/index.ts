@@ -1,6 +1,6 @@
 export { sluglify, unsluglify } from './sluglify'
 export { cn } from './cn'
-export { getCategories, getPosts, getWPPosts, getTags, getPostByTag, filterPostsByCategory } from './post'
+export { getCategories, getPosts, getWPPosts, getTags, getWPTags, getPostByTag, getWPPostByTag, filterPostsByCategory } from './post'
 export { getArchive } from './archive'
 export type { Archive } from './archive'
 export { remarkReadingTime } from './readTime'
