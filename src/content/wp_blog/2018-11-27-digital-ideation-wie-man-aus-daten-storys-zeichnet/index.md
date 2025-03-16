@@ -27,7 +27,7 @@ Wir lernten, was Storytelling in der Statistik bedeutet, was verschiedene Grafen
 
 > _Was hatten wir auch von Story kreieren erwartet, einen «find story»-Knopf drücken und fertig?_
 
-##### Modularbeit mit viel Fleiss und Schweiss
+# Modularbeit mit viel Fleiss und Schweiss
 
 Nach diesen Einführungen starteten wir mit der Modularbeit. Um uns einen Überblick zu verschaffen, durchstöberten wir als erstes den Datenwürfel des Bundesamtes für Statistik. Meine Klasse einigte sich darauf, dass alle aus dem Datengebiet [«Bevölkerung»](https://www.pxweb.bfs.admin.ch/pxweb/de/?rxid=ba7df8a0-4240-4336-a90a-0a14fb2c9f26) Zahlen herauspickten und daraus eine Infografik entwickelten.
 
@@ -37,7 +37,7 @@ Wie typisch für Studierende wurde gegen Ende die Zeit immer knapper und alle ar
 
 ![](./images/IMG_20170406_100022.jpg)
 
-##### Die Schwierigkeit sich festzulegen
+# Die Schwierigkeit sich festzulegen
 
 In meinem Fall konnte ich mich bis zum Schluss nicht für einen Datensatz festlegen und verfolgte deshalb mehrere Ziele. Auf Drängen der Dozierenden entschied ich mich für eine konkrete Basis. Leider hatte ich mir in den Kopf gesetzt, mit Skripten (kleine Computerprogramme, die die Arbeit automatisieren) für die Umsetzung zu arbeiten.
 
@@ -45,7 +45,7 @@ Dies brachte bis zum Schluss eigentlich nichts, denn es war das falsche Programm
 
 Meine designaffinen Mitstudenten konnten mir die wichtigen Funktionen schnell beibringen. Und so sass ich bis in die Nacht hinein an der Arbeit und war am nächsten Tag nicht wirklich zufrieden.
 
-##### Studenten und Deadlines
+# Studenten und Deadlines
 
 Studenten und Deadlines
 
