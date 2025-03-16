@@ -15,7 +15,7 @@ I basically wanted to dip my fingers in c++ and solved the first 4 problems, pro
 
 **Warning**: It was more of a training to learn cpp, and sometimes it was written more complicated than needed because I wanted to try certain things. **All code is written in Qt Creator!**
 
-### Problem 1
+# Problem 1
 
 Write three functions that compute the sum of the numbers in a given list using a for-loop, a while-loop, and recursion.
 
@@ -53,7 +53,7 @@ if (size-1 > 0) { sum += numberSum3(ptrList, size -1); }
 
 return sum; } \[/code\]
 
-### Problem 2
+# Problem 2
 
 Write a function that combines two lists by alternatingly taking elements. For example: given the two lists \[a, b, c\] and \[1, 2, 3\], the function should return \[a, 1, b, 2, c, 3\]. My solution: \[code language="cpp"\] #include <QCoreApplication> #include <iostream>
 
@@ -75,7 +75,7 @@ for (int i = 0; i < size; i++) { cout << list3\[i\] << ", "; }
 
 return a.exec(); } \[/code\]
 
-### Problem 3
+# Problem 3
 
 Write a function that computes the list of the first 100 Fibonacci numbers. By definition, the first two numbers in the Fibonacci sequence are 0 and 1, and each subsequent number is the sum of the previous two. As an example, here are the first 10 Fibonnaci numbers: 0, 1, 1, 2, 3, 5, 8, 13, 21, and 34. \[code language="cpp"\] #include <QCoreApplication> #include <iostream>
 
@@ -91,7 +91,7 @@ int size = sizeof(list); int i = 0; while (size > 0) { cout << list\[i\] << " ";
 
 return a.exec(); } \[/code\]
 
-### Problem 4
+# Problem 4
 
 Write a function that given a list of non negative integers, arranges them such that they form the largest possible number. For example, given \[50, 2, 1, 9\], the largest formed number is 95021. \[code language="cpp"\] #include <QCoreApplication> #include <iostream>
 
@@ -109,7 +109,7 @@ for (int i = 0; i < sizeof(array) / sizeof(\*array); i++) { cout << array\[i\]; 
 
 void bubblesort(int\* array, int size) { do { int j = 1; for (int i = 0; i < size-1; i++) { if ( array\[i\] > array\[i + 1\]) { int temp = array\[i\]; array\[i\] = array\[i+1\]; array\[i+1\] = temp; j = i+1; } } size = j; } while (size > 1); } \[/code\] **Update:** Apparently this problem got a lot of people talking (although not as much as Problem 5 below.) [You can click here to read my solution](https://blog.svpino.com/2015/05/08/solution-to-problem-4).
 
-### Problem 5
+# Problem 5
 
 Write a program that outputs all possibilities to put + or - or nothing between the numbers 1, 2, ..., 9 (in this order) such that the result is always 100. For example: 1 + 2 + 34 – 5 + 67 – 8 + 9 = 100.
 

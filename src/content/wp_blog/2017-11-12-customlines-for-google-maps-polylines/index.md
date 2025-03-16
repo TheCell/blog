@@ -14,7 +14,7 @@ tags:
 
 [![](./images/mapBig.png)](http://blog.thecell.eu/wp-content/uploads/2017/11/mapBig.png)
 
-### Create Map
+# Create Map
 
 The Google Map needs a Container Div and respects a couple of parameters. You'll need a maps API Key, thats not covered here. Take a look at [https://developers.google.com/maps/documentation/javascript/get-api-key](https://developers.google.com/maps/documentation/javascript/get-api-key)
 
@@ -26,7 +26,7 @@ The Google Map needs a Container Div and respects a couple of parameters. You'll
 
 \[code language="javaScript"\] let options = { zoom: 13, center: new google.maps.LatLng(46.125312, 7.728664), heading: 90, styles: mapStyleJson, scrollwheel: false, disableDefaultUI: false, draggableCursor: "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAMCAYAAAADFL+5AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA3AAAANwBohRA4wAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGCSURBVDiNvZQ/SytBFMXP7G52k8zM7sPGJhBWEPwCgmAp2NpYpRCLV9qIf/Hb+IlS7ZK4JEWadCHZYv5md1/zCEk0EsV4YKozDL87955L0jR9nU6nVwDgui4opWCMgTEGQgh2LQ9A0mw237TWh0VRkDzPkec5HMdZgXEcZycAixKTJPE9z/urtb4RQhyVZbnwCCGo1+vgnINzDs/ztnp8MplgNBohjmNEUfQ5wLKyLAuttQ/W2o6UMl6GAYAgCMAYQxiG8H1/I8BwOMR4PEa73Uar1doeYFndbvdPEAR31tqOEOKgqqoV3/d9cM5BKUWj0VjxyrLEbDZDFEUbW/ilKUuSZI8QcmuMuRZCvCupVquBUro42wzxt8c8TdN2VVUvxpgLpdT++s9sm6gfyVmv14uLonjeBEMIAaV00SrXdX8WYFmDweBQKXWvtb5USu2t++uJ2umm6ff7x/P5/EVKeWaM4R/d2f2q+68sy06UUo/GmDOtdfjrAGsw51LKJ2PM6T/my6goOGMl0gAAAABJRU5ErkJggg=='), auto" }; \[/code\]
 
-#### Cursor
+# Cursor
 
 The Cursor takes a Base64 string representing an image like the code above. You can get base64 codes by having a canvas, draw an image on it and then use javascript to get the base64 encode like this:
 
@@ -38,11 +38,11 @@ let canvas = document.getElementById("iconCanvas"); let ctx = canvas.getContext(
 
 Or use a Website like [https://www.base64-image.de/](https://www.base64-image.de/) that does basically the same for you. The draggableCursor needs the base64 surounded by `url('..')` and `, auto`. If the auto is not there it won't render.
 
-#### Map Style
+# Map Style
 
 The Map can be styled to any extend imaginable. Visit [https://mapstyle.withgoogle.com/](https://mapstyle.withgoogle.com/) to set your style and after that you can get a url or just copy the json and add it to the options: \[code language="javaScript"\] // this is an extremely incomplete example! let mapStyleJson = \[ { "elementType": "geometry", "stylers": \[ { "color": "#ebe3cd" } \] } \]; \[/code\] Just add the mapStyleJson to the options list under `styles`
 
-### Polyline
+# Polyline
 
 Polylines have a wide variety of options, take a look at the (underwhelming) documentation: [https://developers.google.com/maps/documentation/javascript/examples/polyline-complex](https://developers.google.com/maps/documentation/javascript/examples/polyline-complex). I will only cover the drawing on the Line part here. It is possible to add SVG's on to the Lines. It accepts an array of icon objects:
 
@@ -58,7 +58,7 @@ poly.setMap(map); \[/code\]
 
 repeat: 0 = turn repeat off. 25% = show the symbol every 25% of the Line. 25px = show the symbol every 25px Note: The % will make sure that the symbol is visible a fixed amount of time (if there is enough space on the line).
 
-### SVG Paths
+# SVG Paths
 
 For the SVG Paths take a look at the w3schools Path examples: [https://www.w3schools.com/graphics/svg\_path.asp](https://www.w3schools.com/graphics/svg_path.asp) or for more technical information consider [https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths). You can use Inkscape aswell (https://inkscape.org/de/). Open it up and enable the XML viewer (Edit > XML-Editor). On the Right you can inspect the svg paths drawn.
 
