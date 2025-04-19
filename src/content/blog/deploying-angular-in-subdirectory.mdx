@@ -1,0 +1,63 @@
+---
+image: /src/assets/images/angular-placeholder.jpg
+category: Programming
+description: >-
+  How to build angular for subdirectories.
+pubDate: 2025-04-11T23:00:00.000Z
+tags:
+  - Angular
+title: Deploying Angular in a Subdirectory
+---
+
+If you want to deploy your angular app in a subdirectory, you need to change the angular build options a bit.
+Lets say, we have www.thecell.eu as domain and we want to run the blog in the subfolder www.thecell.eu/my-blog.
+Angular breaks, in different ways because absolute paths to resources and navigation both normally assume, that we run in the root directory.
+
+First we update our prod build script command. We add the **--base-href** param.
+
+```typescript
+// package.json
+[...]
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "prod": "ng build --base-href /my-blog/ --configuration production ", // [!code focus]
+    "test": "ng test",
+    "lint": "ng lint"
+  },
+[...]
+```
+
+Urls in html templates must be relative instead of absolute. This means, they need to start with a leading **.** (punctuation). If you have media directly linked in a html file, they must be fixed like this:
+```html
+// html template file
+<div class="video-container">
+    <video width="320" height="240" #videoPlayer (click)="onClick()" (ended)="onEnded()">
+        <source src="/ratings/example_video.mp4" type="video/mp4"> // [!code --]
+        <source src="./ratings/example_video.mp4" type="video/mp4"> // [!code ++]
+        Your browser does not support the video tag.
+    </video> 
+</div>
+```
+
+If we take a look at the output html we can see that the **\<base href="/">** has been replaced with our subdirectory.
+This is all we need to make it work. Navigation works now and files can be displayed.
+```html
+// generated index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>VirtualProductionWebsite</title>
+  <base href="/"> // [!code --]
+  <base href="/my-blog/"> // [!code ++]
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+```
