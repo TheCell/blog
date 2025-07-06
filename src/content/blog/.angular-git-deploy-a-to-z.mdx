@@ -1,0 +1,35 @@
+---
+image: /src/assets/images/angular-placeholder.jpg
+category: Programming
+description: >-
+  How to build create an angular app and deploy it via CI/CD. The A to Z guide.
+pubDate: 2025-04-11T23:00:00.000Z
+hologram: /src/assets/hologram/Tex_skill_17.PNG
+tags:
+  - Angular
+title: Angular complete CI/CD setup
+---
+
+# setup git
+- branch and protected branch
+# setup angular
+- environments file with baseurl
+# build step
+# pipeline
+- setup including variables
+# ftp & domain
+# redirect .htaccess file and config
+
+```
+// .htaccess file
+
+RewriteEngine On
+
+# Serve existing files and directories normally
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redirect all other requests to Angular's index.html
+RewriteRule ^ index.html [L]
+```

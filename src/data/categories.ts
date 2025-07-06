@@ -5,6 +5,7 @@ export const CATEGORIES = [
 	'HSLU',
 	'Impressions From',
 	'KVD',
+	'Physical',
 	'Papers',
 	'Programming',
 	'Personal',
