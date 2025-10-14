@@ -11,13 +11,13 @@
 	"keywords": [
 		"astro",
 		"astrojs",
-		"astro-blog",
-		"astro-b"
+		"astro-blog"
 	],
 	"scripts": {
 		"start": "astro dev",
 		"dev": "astro dev",
 		"build": "astro build",
+		"upgrade": "npx @astrojs/upgrade",
 		"sync": "astro sync",
 		"preview": "astro preview",
 		"postbuild": "pagefind --site dist",
@@ -26,13 +26,13 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
-		"@astrojs/rss": "^4.0.11",
-		"astro": "^5.7.5",
+		"@astrojs/rss": "^4.0.12",
+		"astro": "^5.14.5",
 		"astro-font": "^1.1.0"
 	},
 	"devDependencies": {
-		"@astrojs/mdx": "^4.2.5",
-		"@astrojs/sitemap": "^3.4.1",
+		"@astrojs/mdx": "^4.3.7",
+		"@astrojs/sitemap": "^3.6.0",
 		"@astrojs/tailwind": "^6.0.2",
 		"@pagefind/default-ui": "^1.0.4",
 		"@tailwindcss/typography": "0.5.13",
