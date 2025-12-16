@@ -17,64 +17,435 @@ This is what we want to build:
     <source src="demoVideo" type="video/mp4" />
 </video>
 
+# Usage Example In Code
+As you can see, we can just inject a service and then call predefined functions or customize the title, message and how long the toast should stay open. Quick warning, the toast solution will need a bit more work to make it mobile friendly. This implementation is only tested on a computer.   
 
+```typescript
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Modal } from './core/modal/modal/modal';
+import { ToastContainer } from "./core/toast-container/toast-container";
+import { ToastService } from './core/toast-container/toast.service';
 
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Modal, ToastContainer],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
+})
+export class AppComponent {
+  private toastService = inject(ToastService);
 
-
-
-
-
-
-# Code Highlighting
-
-Focused `// [!code focus]`
-```csharp
-public class CustomEvent : UnityEvent<T0> {}
-public class CustomEvent : UnityEvent<T0, T1> {}
-public class CustomEvent : UnityEvent<T0, T1, T2> {}  // [!code focus]
-public class CustomEvent : UnityEvent<T0, T1, T2, T3> {}
-``` 
-
-Highlighting: `// [!code highlight]`, `// [!code warning]`, `// [!code error]`
-
-```csharp
-// GameObjectEvent.cs
-using System;
-using UnityEngine; // [!code highlight]
-using UnityEngine.Events; // [!code warning]
-
-[Serializable]
-public class GameObjectEvent : UnityEvent<GameObject> { } // [!code error]
-```
-
-Diff `// [!code --]` and `// [!code ++]`
-```csharp
-// Health.cs
-using UnityEngine;
-
-public class Health : MonoBehaviour
-{
-    [SerializeField] private int _health = 10; // [!code --]
-    [SerializeField] private int _currentHealth = 10; // [!code ++]
-
-    public void SetHealth(int health)
-    {
-        _health = health; // [!code --]
-        _currentHealth = health; // [!code ++]
-    }
+  public constructor() {
+    this.toastService.show({ title: 'Info', message: 'Welcome', delay: 2000 }); // [!code focus]
+    this.toastService.showInfo('Info', 'Welcome to BiBa Boulder!'); // [!code focus]
+    this.toastService.showSuccess('Success', 'You have successfully logged in!'); // [!code focus]
+    this.toastService.showDanger('Error', 'Error: Unable to load user data.'); // [!code focus]
+    this.toastService.showWarning('Warning', 'Warning: Your password will expire in 7 days.'); // [!code focus]
+  }
 }
 ```
 
-And we can start line numbering from 1 or any other number by including `style="--start: xx;"` in our code block.
-TBD: https://github.com/shikijs/shiki/issues/3#issuecomment-881312748
-```csharp
-// DialogueUI.cs
-public override void DialogueStarted ()
-{
-    // Enable the dialogue controls.
-    if (dialogueContainer != null)
-        dialogueContainer.SetActive(true);
+# Lets build it.
 
-    onDialogueStart?.Invoke();            
+## The Toast
+### Interface
+For the toast we define an interface where we define what the toast will take for configurations. This will help us with code completion and to not make mistakes while using the toastservice and the toast container.
+
+```typescript
+// src/app/core/toast-container/toast/I-toast.ts
+export interface IToast {
+  title: string;
+  message: string;
+  classname?: 'success' | 'danger' | 'warning';
+  delay?: number;
+}
+```
+
+### Toast Component
+#### Component Typescript
+Here we have a few different things. A toast should close automatically after a set time. This is implemented with the a standard html timeout function.
+the appendUniqueId() on line 19 is a string extension I wrote. If you want to use that, see the blogpost for that here [https://newblog.thecell.eu/post/handling-html-ids/](https://newblog.thecell.eu/post/handling-html-ids/) or you simply add a random generated string in the constructor of this component. We need the id for tracking the different components.
+
+```typescript
+// src/app/core/toast-container/toast/toast.ts
+import { ChangeDetectionStrategy, Component, inject, input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ToastService } from '../toast.service';
+import { IToastInternal } from '../I-toast-internal';
+import { NgClass } from '@angular/common';
+
+@Component({
+  selector: 'app-toast',
+  imports: [NgClass],
+  templateUrl: './toast.html',
+  styleUrl: './toast.scss',
+  changeDetection: ChangeDetectionStrategy.Default,
+})
+export class Toast implements OnChanges, OnDestroy {
+  public toastService = inject(ToastService);
+
+  public toast = input.required<IToastInternal>();
+
+  public id: string = ''.appendUniqueId();
+  public showFadeout: boolean = false;
+  
+  private delay?: number;
+  private fadeoutDelayTimer?: number;
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    const toast = changes['toast'];
+
+    if (toast.previousValue) {
+      this.stopDelay();
+    }
+    
+    if (toast.currentValue) {
+      if (toast.currentValue.delay) {
+        this.startDelay();
+      }
+    }
+  }
+
+  public ngOnDestroy(): void {
+    if (this.delay) {
+      window.clearTimeout(this.delay);
+    }
+    if (this.fadeoutDelayTimer) {
+      window.clearTimeout(this.fadeoutDelayTimer);
+    }
+  }
+
+  public stopDelay(): void {
+    if (this.delay) {
+      window.clearTimeout(this.delay);
+    }
+    if (this.fadeoutDelayTimer) {
+      window.clearTimeout(this.fadeoutDelayTimer);
+    }
+    this.showFadeout = false;
+  }
+
+  public startDelay(): void {
+    const delay = this.toast().delay;
+    if (delay && delay > 0) {
+      this.fadeoutDelayTimer = window.setTimeout(() => {
+        this.showFadeout = true;
+      }, delay - 500);
+
+      this.delay = window.setTimeout(() => {
+        this.toastService.remove(this.toast().id);
+      }, delay);
+    }
+  }
+}
+
+```
+
+#### Component HTML
+```html
+// src/app/core/toast-container/toast/toast.html
+<div
+  [id]="id" role="dialog"
+  [class]="'toast ' + toast().classname"
+  [ngClass]="{'fadeout': showFadeout }"
+  (mouseenter)="stopDelay()"
+  (mouseleave)="startDelay()">
+  <div class="toast-content">
+    <div class="toast-taskbar">
+      <button aria-label="Close toast" class="button close-button" (click)="toastService.remove(toast().id)">&times;</button>
+    </div>
+    <div class="toast-body">
+      <h4 [class]="toast().classname">{{ toast().title }}</h4>
+      {{ toast().message }}
+    </div>
+  </div>
+</div>
+```
+
+#### Component (S)CSS
+```css
+/* src/app/core/toast-container/toast/toast.scss */
+:host {
+  display: block;
+}
+
+$success: #198754;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #cccccc;
+$dark: #1f1f1f;
+
+$fontColor: $light;
+$backgroundColor: $dark;
+
+html {
+    background-color: $backgroundColor;
+    color: $fontColor;
+}
+
+h4 {
+  margin-top: 5px;
+}
+
+.toast {
+  position: relative;
+  border-radius: 5px;
+  border: 1px solid;
+  background-color: $dark;
+  border-color: color-mix(in srgb, $dark 50%, $light 50%);
+}
+
+.fadeout {
+  animation: fadeOut 0.5s linear;
+}
+
+.fadeout:hover, .fadeout:focus {
+  animation: none;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.toast-taskbar {
+  width: 100%;
+  height: 1.5em;
+  border-bottom: 1px solid;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  display: flex;
+  justify-content: flex-end;
+  border-image: linear-gradient(to right, rgba(0, 0, 0, 0) 60%, color-mix(in srgb, $dark 50%, $light 50%) 80%) 1;
+}
+
+.danger .toast-taskbar {
+  background: repeating-linear-gradient(
+    -55deg,
+    color-mix(in srgb, $dark 100%, $danger 10%),
+    color-mix(in srgb, $dark 100%, $danger 10%) 5px,
+    $dark 5px,
+    $dark 10px
+  );
+}
+
+.success .toast-taskbar {
+  background: repeating-linear-gradient(
+    -55deg,
+    color-mix(in srgb, $dark 100%, $success 10%),
+    color-mix(in srgb, $dark 100%, $success 10%) 5px,
+    $dark 5px,
+    $dark 10px
+  );
+}
+
+.warning .toast-taskbar {
+  background: repeating-linear-gradient(
+    -55deg,
+    color-mix(in srgb, $dark 100%, $warning 10%),
+    color-mix(in srgb, $dark 100%, $warning 10%) 5px,
+    $dark 5px,
+    $dark 10px
+  );
+}
+
+.toast-body {
+  padding: 0px 15px 15px 15px;
+}
+
+.close-button {
+  height: 100%;
+  width: 2em;
+  text-align: center;
+  padding: 0px;
+  border-top-right-radius: 4px;
+}
+
+.close-button:hover, .close-button:focus {
+  background-color: color-mix(in srgb, $dark 100%, $danger 100%);
+}
+
+.close-button:active {
+  background-color: color-mix(in srgb, $dark 0%, $danger 100%);
+}
+
+.success {
+  border-color: $success;
+}
+
+.danger {
+  border-color: color-mix(in srgb, $dark 50%, $danger 50%);
+}
+
+.warning {
+  border-color: color-mix(in srgb, $dark 50%, $warning 50%);
+}
+
+.success .toast-taskbar {
+  border-image: linear-gradient(to right, rgba(0, 0, 0, 0) 60%, $success 80%) 1;
+}
+
+.danger .toast-taskbar {
+  border-image: linear-gradient(to right, rgba(0, 0, 0, 0) 60%, color-mix(in srgb, $dark 50%, $danger 50%) 80%) 1;
+}
+
+.warning .toast-taskbar {
+  border-image: linear-gradient(to right, rgba(0, 0, 0, 0) 60%, color-mix(in srgb, $dark 50%, $warning 50%) 80%) 1;
+}
+
+.success h4 {
+  color: $success;
+}
+
+.warning h4 {
+  color: $warning;
+}
+
+.danger h4 {
+  color: $danger;
+}
+
+```
+## Toast Service
+### Toast Service Interface
+The interface extends our defined toast interface with an Id to keep track of. We could define the id in our IToast interface but we don't need the id there.
+```typescript
+// src/app/core/toast-container/I-toast-internal.ts
+import { IToast } from "./toast/I-toast";
+
+export interface IToastInternal extends IToast {
+  id: string;
+}
+```
+
+### Toast Service Component
+The toast service is the part we will use everywhere in our application. It's our way of summoning toasts. In theory you could just omit all methods that are called `showXXX` and only use the `show(toast: IToast)` Method. The others are just good helpers for some predefined toasts. 
+
+
+```typescript
+// src/app/core/toast-container/toast.service.ts
+import { Injectable } from '@angular/core';
+import { IToast } from './toast/I-toast';
+import { IToastInternal } from './I-toast-internal';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ToastService {
+  public toasts: IToastInternal[] = [];
+
+  private standardDelay = 3000;
+
+  public show(toast: IToast): void {
+    const id = ''.appendUniqueId();
+    this.toasts.push({ ...toast, id: id });
+  }
+
+  public showInfo(title: string, message: string, delay?: number): void {
+    this.show({ title, message, delay: delay ?? this.standardDelay });
+  }
+
+  public showSuccess(title: string, message: string, delay?: number): void {
+    this.show({ title, message, classname: 'success', delay: delay ?? this.standardDelay });
+  }
+
+  public showDanger(title: string, message: string): void {
+    this.show({ title, message, classname: 'danger' });
+  }
+
+  public showWarning(title: string, message: string, delay?: number): void {
+    this.show({ title, message, classname: 'warning', delay: delay ?? this.standardDelay });
+  }
+
+  public remove(id: string): void {
+    this.toasts = this.toasts.filter(t => t.id !== id);
+  }
+
+}
+
+```
+
+## Toast container
+For simplicity I've put the html, scss and typescript all in one file here. You can see that this container needs a fixed position where we want the toasts to appear. And there we display all the toasts the service currently holds.
+
+```typescript
+// src/app/core/toast-container/toast-container.ts
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Toast } from './toast/toast';
+import { ToastService } from './toast.service';
+
+@Component({
+  selector: 'app-toast-container',
+  imports: [Toast],
+  templateUrl: './toast-container.html',
+  styleUrl: './toast-container.scss',
+  template: `
+    <div class="toast-container">
+      @for (toast of toastService.toasts; track toast.id) {
+        <app-toast [toast]="toast"></app-toast>
+      }
+    </div>`,
+  styles: `
+    :host {
+      display: block;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 300px;
+    }`,
+  changeDetection: ChangeDetectionStrategy.Default,
+})
+export class ToastContainer {
+  public toastService = inject(ToastService);
+}
+
+```
+
+This container Component must be added somewhere. Ideally we have this component always active in the root of our app. 
+
+```html
+<!-- src/app/app.component.html --> // [!code focus]
+<div class="content">
+  <router-outlet />
+</div>
+
+<app-toast-container></app-toast-container> // [!code focus]
+```
+
+```typescript
+// src/app/app.component.ts
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Modal } from './core/modal/modal/modal';
+import { ToastContainer } from "./core/toast-container/toast-container";
+import { ToastService } from './core/toast-container/toast.service';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Modal, ToastContainer],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
+})
+export class AppComponent {
+  private toastService = inject(ToastService);
+
+  public constructor() {
+    this.toastService.show({ title: 'Info', message: 'Welcome', delay: 2000 });
+    this.toastService.showInfo('Info', 'Welcome to BiBa Boulder!');
+    this.toastService.showSuccess('Success', 'You have successfully logged in!');
+    this.toastService.showDanger('Error', 'Error: Unable to load user data.');
+    this.toastService.showWarning('Warning', 'Warning: Your password will expire in 7 days.');
+  }
 }
 ```
