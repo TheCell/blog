@@ -1,0 +1,80 @@
+---
+title: 'Building Toasts in Angular without extra libraries'
+description: 'Building toasts with angular without bootstrap and other libraries'
+pubDate: 'Dec 16 2025'
+image: '../../assets/images/typescript-placeholder.jpg'
+category: 'Programming'
+tags: ['programming', 'angular', 'toast']
+---
+import demoVideo from './building-toasts-in-angular-without-extra-libraries/angular-toasts.mp4';
+
+# The Result
+
+A "toast" is a brief, non-intrusive pop-up message that provides user feedback on an action (like "Message Sent!") without interrupting the current task, appearing temporarily and fading away automatically. We will build one that is a bit bigger and has space for a bit more information.
+This is what we want to build:
+
+<video alt="animated demo" width="392" height="598">
+    <source src="demoVideo" type="video/mp4" />
+</video>
+
+
+
+
+
+
+
+
+
+# Code Highlighting
+
+Focused `// [!code focus]`
+```csharp
+public class CustomEvent : UnityEvent<T0> {}
+public class CustomEvent : UnityEvent<T0, T1> {}
+public class CustomEvent : UnityEvent<T0, T1, T2> {}  // [!code focus]
+public class CustomEvent : UnityEvent<T0, T1, T2, T3> {}
+``` 
+
+Highlighting: `// [!code highlight]`, `// [!code warning]`, `// [!code error]`
+
+```csharp
+// GameObjectEvent.cs
+using System;
+using UnityEngine; // [!code highlight]
+using UnityEngine.Events; // [!code warning]
+
+[Serializable]
+public class GameObjectEvent : UnityEvent<GameObject> { } // [!code error]
+```
+
+Diff `// [!code --]` and `// [!code ++]`
+```csharp
+// Health.cs
+using UnityEngine;
+
+public class Health : MonoBehaviour
+{
+    [SerializeField] private int _health = 10; // [!code --]
+    [SerializeField] private int _currentHealth = 10; // [!code ++]
+
+    public void SetHealth(int health)
+    {
+        _health = health; // [!code --]
+        _currentHealth = health; // [!code ++]
+    }
+}
+```
+
+And we can start line numbering from 1 or any other number by including `style="--start: xx;"` in our code block.
+TBD: https://github.com/shikijs/shiki/issues/3#issuecomment-881312748
+```csharp
+// DialogueUI.cs
+public override void DialogueStarted ()
+{
+    // Enable the dialogue controls.
+    if (dialogueContainer != null)
+        dialogueContainer.SetActive(true);
+
+    onDialogueStart?.Invoke();            
+}
+```
