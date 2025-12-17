@@ -1,20 +1,21 @@
 ---
-title: 'Building Toasts in Angular without extra libraries'
+title: 'Building Toasts In Angular Without Extra Libraries'
 description: 'Building toasts with angular without bootstrap and other libraries'
-pubDate: 'Dec 16 2025'
+pubDate: 'Dec 17 2025'
 image: '../../assets/images/typescript-placeholder.jpg'
 category: 'Programming'
 tags: ['programming', 'angular', 'toast']
 ---
-import demoVideo from './building-toasts-in-angular-without-extra-libraries/angular-toasts.mp4';
+import demoVideo from '/building-toasts-in-angular-without-extra-libraries-media/angular-toasts.mp4';
 
 # The Result
 
 A "toast" is a brief, non-intrusive pop-up message that provides user feedback on an action (like "Message Sent!") without interrupting the current task, appearing temporarily and fading away automatically. We will build one that is a bit bigger and has space for a bit more information.
 This is what we want to build:
 
-<video alt="animated demo" width="392" height="598">
-    <source src="demoVideo" type="video/mp4" />
+![Demo Video](demoVideo)
+<video alt="animated demo" width="{demoVideo.width}" height="{demoVideo.height}">
+    <source src="{demoVideo.src}" type="video/mp4" />
 </video>
 
 # Usage Example In Code
@@ -46,11 +47,11 @@ export class AppComponent {
 }
 ```
 
-# Lets build it.
+# Lets Get Started
 
 ## The Toast
 ### Interface
-For the toast we define an interface where we define what the toast will take for configurations. This will help us with code completion and to not make mistakes while using the toastservice and the toast container.
+For the toast we define an interface where we define everything configurable in the toast. This will help us with code completion and to not make mistakes while using the toastservice and the toast container.
 
 ```typescript
 // src/app/core/toast-container/toast/I-toast.ts
@@ -63,9 +64,13 @@ export interface IToast {
 ```
 
 ### Toast Component
-#### Component Typescript
+This is the important part of the project. It's everything that is displayed once we call the service.
+
+#### Typescript
 Here we have a few different things. A toast should close automatically after a set time. This is implemented with the a standard html timeout function.
-the appendUniqueId() on line 19 is a string extension I wrote. If you want to use that, see the blogpost for that here [https://newblog.thecell.eu/post/handling-html-ids/](https://newblog.thecell.eu/post/handling-html-ids/) or you simply add a random generated string in the constructor of this component. We need the id for tracking the different components.
+the appendUniqueId() on line 19 is a string extension I wrote. If you want to use that, see the blogpost for that here [https://newblog.thecell.eu/post/handling-html-ids/](https://newblog.thecell.eu/post/handling-html-ids/) or you simply add a random generated string in the constructor of this component. We need the id for tracking the different components. If we hover over the toast, we don't want it to disappear. So once we hover over it, we stop the timeout.   
+
+We need 2 timers, one for the disappear-animation and another one to finally get rid of the component once the disappear animation has finished.
 
 ```typescript
 // src/app/core/toast-container/toast/toast.ts
@@ -141,7 +146,7 @@ export class Toast implements OnChanges, OnDestroy {
 
 ```
 
-#### Component HTML
+#### HTML
 ```html
 // src/app/core/toast-container/toast/toast.html
 <div
@@ -162,11 +167,26 @@ export class Toast implements OnChanges, OnDestroy {
 </div>
 ```
 
-#### Component (S)CSS
+#### (S)CSS
+The Toast CSS is massive but I've highlighted only the important parts (which are frankly almost none) and the fadeout animation. For completeness and to get the same results as I do, I've copied some of my global CSS into this aswell. Feel free to style your toasts the way you like.
+
 ```css
-/* src/app/core/toast-container/toast/toast.scss */
+/* src/app/core/toast-container/toast/toast.scss */ /* [!code focus] */
 :host {
   display: block;
+}
+
+/* start of global styles I've copied over */
+
+.button { /* [!code focus] */
+  all: unset; /* [!code focus] */
+  cursor: pointer;
+  padding: 3px 14px; /* [!code focus] */
+  background-color: $lightDark;
+} /* [!code focus] */
+
+.button:hover, .button:focus {
+  background-color: color-mix(in srgb, $dark 50%, $highlight 50%);
 }
 
 $success: #198754;
@@ -183,34 +203,37 @@ html {
     color: $fontColor;
 }
 
+/* end of global styles I've copied over */
+
 h4 {
   margin-top: 5px;
 }
 
-.toast {
-  position: relative;
+.toast { /* [!code focus] */
+  position: relative; /* [!code focus] */
   border-radius: 5px;
   border: 1px solid;
   background-color: $dark;
   border-color: color-mix(in srgb, $dark 50%, $light 50%);
-}
+} /* [!code focus] */
 
-.fadeout {
-  animation: fadeOut 0.5s linear;
-}
 
-.fadeout:hover, .fadeout:focus {
-  animation: none;
-}
+.fadeout { /* [!code focus] */
+  animation: fadeOut 0.5s linear; /* [!code focus] */
+} /* [!code focus] */
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
+.fadeout:hover, .fadeout:focus { /* [!code focus] */
+  animation: none; /* [!code focus] */
+} /* [!code focus] */
+
+@keyframes fadeOut { /* [!code focus] */
+  from { /* [!code focus] */
+    opacity: 1; /* [!code focus] */
+  } /* [!code focus] */
+  to { /* [!code focus] */
+    opacity: 0; /* [!code focus] */
+  } /* [!code focus] */
+} /* [!code focus] */
 
 .toast-taskbar {
   width: 100%;
@@ -253,9 +276,9 @@ h4 {
   );
 }
 
-.toast-body {
-  padding: 0px 15px 15px 15px;
-}
+.toast-body { /* [!code focus] */
+  padding: 0px 15px 15px 15px; /* [!code focus] */
+} /* [!code focus] */
 
 .close-button {
   height: 100%;
@@ -311,8 +334,8 @@ h4 {
 
 ```
 ## Toast Service
-### Toast Service Interface
-The interface extends our defined toast interface with an Id to keep track of. We could define the id in our IToast interface but we don't need the id there.
+### Interface
+The interface extends our defined toast interface with an Id to keep track of. We could define the id in our IToast interface but we don't need the id there so lets keep it tidy.
 ```typescript
 // src/app/core/toast-container/I-toast-internal.ts
 import { IToast } from "./toast/I-toast";
@@ -322,7 +345,7 @@ export interface IToastInternal extends IToast {
 }
 ```
 
-### Toast Service Component
+### Component
 The toast service is the part we will use everywhere in our application. It's our way of summoning toasts. In theory you could just omit all methods that are called `showXXX` and only use the `show(toast: IToast)` Method. The others are just good helpers for some predefined toasts. 
 
 
@@ -423,13 +446,15 @@ This container Component must be added somewhere. Ideally we have this component
 <app-toast-container></app-toast-container> // [!code focus]
 ```
 
+# Usage
+And just as shown at the start of the blog: You have to import the toast service wherever you like and whenever you need it, you summon a new toast.
 ```typescript
-// src/app/app.component.ts
+// src/app/app.component.ts // [!code focus]
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Modal } from './core/modal/modal/modal';
 import { ToastContainer } from "./core/toast-container/toast-container";
-import { ToastService } from './core/toast-container/toast.service';
+import { ToastService } from './core/toast-container/toast.service'; // [!code focus]
 
 @Component({
   selector: 'app-root',
@@ -438,14 +463,14 @@ import { ToastService } from './core/toast-container/toast.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  private toastService = inject(ToastService);
+  private toastService = inject(ToastService); // [!code focus]
 
   public constructor() {
-    this.toastService.show({ title: 'Info', message: 'Welcome', delay: 2000 });
-    this.toastService.showInfo('Info', 'Welcome to BiBa Boulder!');
-    this.toastService.showSuccess('Success', 'You have successfully logged in!');
-    this.toastService.showDanger('Error', 'Error: Unable to load user data.');
-    this.toastService.showWarning('Warning', 'Warning: Your password will expire in 7 days.');
+    this.toastService.show({ title: 'Info', message: 'Welcome', delay: 2000 }); // [!code focus]
+    this.toastService.showInfo('Info', 'Welcome to BiBa Boulder!'); // [!code focus]
+    this.toastService.showSuccess('Success', 'You have successfully logged in!'); // [!code focus]
+    this.toastService.showDanger('Error', 'Error: Unable to load user data.'); // [!code focus]
+    this.toastService.showWarning('Warning', 'Warning: Your password will expire in 7 days.'); // [!code focus]
   }
 }
 ```
