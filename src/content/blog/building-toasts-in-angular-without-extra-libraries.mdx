@@ -6,20 +6,18 @@ image: '../../assets/images/typescript-placeholder.jpg'
 category: 'Programming'
 tags: ['programming', 'angular', 'toast']
 ---
-import demoVideo from '/building-toasts-in-angular-without-extra-libraries-media/angular-toasts.mp4';
 
 # The Result
 
 A "toast" is a brief, non-intrusive pop-up message that provides user feedback on an action (like "Message Sent!") without interrupting the current task, appearing temporarily and fading away automatically. We will build one that is a bit bigger and has space for a bit more information.
 This is what we want to build:
 
-![Demo Video](demoVideo)
-<video alt="animated demo" width="{demoVideo.width}" height="{demoVideo.height}">
-    <source src="{demoVideo.src}" type="video/mp4" />
+<video muted autoplay loop alt="disappearing toasts" >
+  <source src="/content/building-toasts-in-angular-without-extra-libraries/angular-toasts.mp4" type="video/mp4" />
 </video>
 
 # Usage Example In Code
-As you can see, we can just inject a service and then call predefined functions or customize the title, message and how long the toast should stay open. Quick warning, the toast solution will need a bit more work to make it mobile friendly. This implementation is only tested on a computer.   
+As you can see, we can just inject a service and then call predefined functions or customize the title, message, and how long the toast should stay open. Quick warning, the toast solution will need a bit more work to make it mobile friendly. This implementation is only tested on a computer.
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -51,7 +49,7 @@ export class AppComponent {
 
 ## The Toast
 ### Interface
-For the toast we define an interface where we define everything configurable in the toast. This will help us with code completion and to not make mistakes while using the toastservice and the toast container.
+For the toast, we define an interface where we define everything configurable in the toast. This will help us with code completion and to not make mistakes while using the toast service and the toast container.
 
 ```typescript
 // src/app/core/toast-container/toast/I-toast.ts
@@ -67,10 +65,10 @@ export interface IToast {
 This is the important part of the project. It's everything that is displayed once we call the service.
 
 #### Typescript
-Here we have a few different things. A toast should close automatically after a set time. This is implemented with the a standard html timeout function.
-the appendUniqueId() on line 19 is a string extension I wrote. If you want to use that, see the blogpost for that here [https://newblog.thecell.eu/post/handling-html-ids/](https://newblog.thecell.eu/post/handling-html-ids/) or you simply add a random generated string in the constructor of this component. We need the id for tracking the different components. If we hover over the toast, we don't want it to disappear. So once we hover over it, we stop the timeout.   
+Here we have a few different things. A toast should close automatically after a set time. This is implemented with the standard HTML timeout function.
+The appendUniqueId() on line 19 is a string extension I wrote. If you want to use that, see the blog post for that here: [https://newblog.thecell.eu/post/handling-html-ids/](https://newblog.thecell.eu/post/handling-html-ids/) Or you simply add a randomly generated string in the constructor of this component. We need the id for tracking the different components. If we hover over the toast, we don't want it to disappear. So once we hover over it, we stop the timeout.   
 
-We need 2 timers, one for the disappear-animation and another one to finally get rid of the component once the disappear animation has finished.
+We need 2 timers, one for the disappear animation and another one to finally get rid of the component once the disappear animation has finished.
 
 ```typescript
 // src/app/core/toast-container/toast/toast.ts
@@ -168,7 +166,7 @@ export class Toast implements OnChanges, OnDestroy {
 ```
 
 #### (S)CSS
-The Toast CSS is massive but I've highlighted only the important parts (which are frankly almost none) and the fadeout animation. For completeness and to get the same results as I do, I've copied some of my global CSS into this aswell. Feel free to style your toasts the way you like.
+The Toast CSS is massive, but I've highlighted only the important parts (which are frankly almost none) and the fadeout animation. For completeness and to get the same results as I do, I've copied some of my global CSS into this as well. Feel free to style your toasts the way you like.
 
 ```css
 /* src/app/core/toast-container/toast/toast.scss */ /* [!code focus] */
@@ -346,7 +344,7 @@ export interface IToastInternal extends IToast {
 ```
 
 ### Component
-The toast service is the part we will use everywhere in our application. It's our way of summoning toasts. In theory you could just omit all methods that are called `showXXX` and only use the `show(toast: IToast)` Method. The others are just good helpers for some predefined toasts. 
+The toast service is the part we will use everywhere in our application. It's our way of summoning toasts. In theory you could just omit all methods that are called `showXXX` and only use the `show(toast: IToast)` method. The others are just good helpers for some predefined toasts. 
 
 
 ```typescript
@@ -393,7 +391,7 @@ export class ToastService {
 ```
 
 ## Toast container
-For simplicity I've put the html, scss and typescript all in one file here. You can see that this container needs a fixed position where we want the toasts to appear. And there we display all the toasts the service currently holds.
+For simplicity I've put the HTML, SCSS and TypeScript all in one file here. You can see that this container needs a fixed position where we want the toasts to appear. And there we display all the toasts the service currently holds.
 
 ```typescript
 // src/app/core/toast-container/toast-container.ts
@@ -435,7 +433,7 @@ export class ToastContainer {
 
 ```
 
-This container Component must be added somewhere. Ideally we have this component always active in the root of our app. 
+This container component must be added somewhere. Ideally we have this component always active in the root of our app. 
 
 ```html
 <!-- src/app/app.component.html --> // [!code focus]
@@ -447,7 +445,7 @@ This container Component must be added somewhere. Ideally we have this component
 ```
 
 # Usage
-And just as shown at the start of the blog: You have to import the toast service wherever you like and whenever you need it, you summon a new toast.
+And just as shown at the start of the blog, you have to import the toast service wherever you like, and whenever you need it, you summon a new toast.
 ```typescript
 // src/app/app.component.ts // [!code focus]
 import { Component, inject } from '@angular/core';
