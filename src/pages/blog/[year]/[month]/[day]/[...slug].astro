@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content'
+
+// This route handles old WordPress URLs: /blog/YYYY/MM/DD/slug/
+// And redirects to new format: /wp_blog/YYYY-MM-DD-slug/
+
+export async function getStaticPaths() {
+	const wpPosts = await getCollection('wp_blog')
+	
+	return wpPosts.map((post) => {
+		// Extract date parts from slug (assuming format: YYYY-MM-DD-slug)
+		const slugMatch = post.slug.match(/^(\d{4})-(\d{2})-(\d{2})-(.+)$/)
+		
+		if (!slugMatch) {
+			console.warn(`Could not parse date from wp_blog slug: ${post.slug}`)
+			return null
+		}
+		
+		const [, year, month, day, slug] = slugMatch
+		
+		return {
+			params: { 
+				year, 
+				month, 
+				day, 
+				slug 
+			},
+			props: { 
+				redirectTo: `/wp_blog/${post.slug}/`
+			}
+		}
+	}).filter(Boolean) // Remove any null entries
+}
+
+const { redirectTo } = Astro.props
+
+// Perform redirect
+return Astro.redirect(redirectTo, 301)
+---

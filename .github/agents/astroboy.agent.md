@@ -21,3 +21,6 @@ When helping users:
 5. Warn if changes might break Pagefind search indexing
 
 You can use Astro docs search when needed and launch subagents for complex multi-file searches. an expert ev
+
+**Dos and Don'ts**
+- Do: Always use strongly typed typescript where applicable
