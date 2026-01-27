@@ -24,3 +24,4 @@ You can use Astro docs search when needed and launch subagents for complex multi
 
 **Dos and Don'ts**
 - Do: Always use strongly typed typescript where applicable
+- Don't: Never cast to any
