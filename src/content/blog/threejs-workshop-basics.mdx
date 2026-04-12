@@ -1,0 +1,317 @@
+---
+title: 'Three.js Workshop - Scene, Camera, Interaction'
+description: 'A hands-on guide to getting started with Three.js: cameras, lights, shapes, animation, model import and interaction.'
+pubDate: 'Apr 12 2026'
+image: '../../assets/images/typescript-placeholder.jpg'
+category: 'Programming'
+tags: ['programming', 'threejs', 'webgl', 'javascript', 'workshop']
+---
+
+# Three.js Workshop — Scene, Camera, Interaction
+
+This is a write-up of a hands-on Three.js workshop covering the basics: setting up a scene with a camera, adding lights and shapes, animating objects, importing 3D models and adding interaction.
+
+## Getting Started
+
+1. Clone the repository: [github.com/TheCell/Threejs-Workshop](https://github.com/TheCell/Threejs-Workshop)
+2. Run `npm install`
+3. Run `npm start`
+
+## Libraries in Use
+
+- [Three.js](https://threejs.org/) — the de facto standard 3D library for the web ([Manual](https://threejs.org/manual/), [Examples](https://threejs.org/examples/))
+- [Stats.js](https://www.npmjs.com/package/statsjs) — measure FPS
+- [Lil-gui](https://www.npmjs.com/package/lil-gui) — lightweight debug UI ([Guide](https://lil-gui.georgealways.com/#Guide))
+- [Jolt Physics](https://github.com/jrouwe/JoltPhysics.js) — WebAssembly physics engine
+
+---
+
+# Project 1 — Building a Basic Scene
+
+## Basic Camera
+
+A camera defines what part of the 3D world is visible. The key parameters are best explained with the concept of a *frustum* — a truncated pyramid that represents the visible volume.
+
+![Camera Frustum](/content/threejs-workshop/frustum-3d.svg)
+
+Add a camera in the `main()` method:
+
+```javascript
+function main() {
+  ...
+  renderer.shadowMap.enabled = true;
+  scene = new THREE.Scene();
+
+  const fov = 75; // [!code ++]
+  const aspect = 2; // [!code ++]
+  const near = 0.01; // [!code ++]
+  const far = 50; // [!code ++]
+  camera = new THREE.PerspectiveCamera(fov, aspect, near, far); // [!code ++]
+  camera.position.y = 4; // [!code ++]
+  camera.position.z = 4; // [!code ++]
+  camera.lookAt(0, 0, 0); // [!code ++]
+
+  renderer.render(scene, camera); // [!code ++]
+  renderer.domElement.addEventListener('pointermove', onPointerMove); // [!code ++]
+
+  addLight(scene);
+```
+
+> **Tip:** Once you have something to see, try another camera — for example `OrthographicCamera` — and compare the results.
+
+## Light
+
+In order to see any objects we need to add light to the scene. Start with an ambient light:
+
+```javascript
+function addLight(scene: THREE.Scene) {
+  ambientLight = new THREE.AmbientLight(0xFFFFFF, 1); // [!code ++]
+  scene.add(ambientLight); // [!code ++]
+}
+```
+
+## Add Something to See
+
+We have a camera but nothing to render. Add a floor plane and a TorusKnot:
+
+```javascript
+function addFloor(scene: THREE.Scene) {
+  const floorSize = 10; // [!code ++]
+  const floorGeometry = new THREE.PlaneGeometry(floorSize, floorSize); // [!code ++]
+  const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.8 }); // [!code ++]
+  const floor = new THREE.Mesh(floorGeometry, floorMaterial); // [!code ++]
+  floor.position.y = -1; // [!code ++]
+  floor.rotation.x = -Math.PI / 2; // [!code ++]
+  floor.receiveShadow = true; // [!code ++]
+  scene.add(floor); // [!code ++]
+}
+```
+
+```javascript
+function addShape(scene: THREE.Scene) {
+  const geometry = new THREE.TorusKnotGeometry(0.5, 0.2, 100, 16); // [!code ++]
+  const material = new THREE.MeshStandardMaterial({ color: basicColor }); // [!code ++]
+  const mesh = new THREE.Mesh(geometry, material); // [!code ++]
+  mesh.castShadow = true; // [!code ++]
+  scene.add(mesh); // [!code ++]
+  meshes.push(mesh); // [!code ++]
+  meshToGroup.set(mesh, mesh); // [!code ++]
+}
+```
+
+You should now have something to see. The scene should now look like this:
+
+![Basic Scene](/content/threejs-workshop/basicScene.webp)
+
+## Directional Light
+
+Ambient light alone makes the scene look flat — there are no shadows or highlights. A directional light adds depth:
+
+```javascript
+function addLight(scene: THREE.Scene) {
+  ambientLight = new THREE.AmbientLight(0xFFFFFF, 1);
+  scene.add(ambientLight);
+
+  light = new THREE.DirectionalLight(lightColor, lightIntensity); // [!code ++]
+  light.position.set(Math.cos(lightAngle) * lightRadius, 10, Math.sin(lightAngle) * lightRadius); // [!code ++]
+  light.castShadow = true; // [!code ++]
+  scene.add(light); // [!code ++]
+}
+```
+
+> **Tip:** Try different materials on your shapes: `MeshBasicMaterial` ignores complex lights, while `MeshNormalMaterial` colours based on surface normals.
+
+## Camera Movement
+
+Listen to keyboard inputs to move the camera around:
+
+```javascript
+const keysPressed = new Set<string>();
+window.addEventListener('keydown', (e) => keysPressed.add(e.code)); // [!code ++]
+window.addEventListener('keyup', (e) => keysPressed.delete(e.code)); // [!code ++]
+```
+
+Then implement WASD + Q/E movement:
+
+```javascript
+function updateCamera() {
+  if (!camera) return; // [!code ++]
+  camera.getWorldDirection(cameraForward); // [!code ++]
+  cameraForward.y = 0; // [!code ++]
+  cameraForward.normalize(); // [!code ++]
+  cameraRight.crossVectors(cameraForward, up).normalize(); // [!code ++]
+
+  if (keysPressed.has('KeyW')) { // [!code ++]
+    camera.position.addScaledVector(cameraForward, cameraSpeed); // [!code ++]
+  } // [!code ++]
+
+  if (keysPressed.has('KeyS')) { // [!code ++]
+    camera.position.addScaledVector(cameraForward, -cameraSpeed); // [!code ++]
+  } // [!code ++]
+
+  if (keysPressed.has('KeyA')) { // [!code ++]
+    camera.position.addScaledVector(cameraRight, -cameraSpeed); // [!code ++]
+  } // [!code ++]
+
+  if (keysPressed.has('KeyD')) { // [!code ++]
+    camera.position.addScaledVector(cameraRight, cameraSpeed); // [!code ++]
+  } // [!code ++]
+
+  if (keysPressed.has('KeyQ')) { // [!code ++]
+    camera.position.y -= cameraSpeed; // [!code ++]
+  } // [!code ++]
+
+  if (keysPressed.has('KeyE')) { // [!code ++]
+    camera.position.y += cameraSpeed; // [!code ++]
+  } // [!code ++]
+}
+```
+
+## Animation
+
+Our test object is quite static — let's add some animation:
+
+![Animation](/content/threejs-workshop/animation.webp)
+
+```javascript
+function animate(time: number) {
+  time *= 0.001; // convert time to seconds // [!code ++]
+
+  if (rotateObjects) { // [!code ++]
+    const groups = new Set(meshToGroup.values()); // [!code ++]
+    for (let i = 0; i < groups.size; i++) { // [!code ++]
+      const group = Array.from(groups)[i]; // [!code ++]
+      if (i === 0) { // [!code ++]
+        group.rotation.x = time; // [!code ++]
+      } // [!code ++]
+      group.rotation.y = time; // [!code ++]
+    } // [!code ++]
+  } // [!code ++]
+}
+```
+
+## 3D Model Import
+
+Primitives are fine for prototyping, but real scenes need 3D models. Set up a GLTF loader and an HTML file input:
+
+```javascript
+const gltfLoader = new GLTFLoader(); // [!code ++]
+
+function importModel() {
+  const input = document.createElement('input'); // [!code ++]
+  input.type = 'file'; // [!code ++]
+  input.accept = '.glb,.gltf'; // [!code ++]
+  input.onchange = () => { // [!code ++]
+    const file = input.files?.[0]; // [!code ++]
+    if (!file) { // [!code ++]
+      return; // [!code ++]
+    } // [!code ++]
+
+    const reader = new FileReader(); // [!code ++]
+    reader.onload = (event) => { // [!code ++]
+      const data = event.target!.result as ArrayBuffer; // [!code ++]
+      gltfLoader.parse(data, '/GLB format/', (gltf) => { // [!code ++]
+        const model = gltf.scene; // [!code ++]
+
+        model.traverse((child) => { // [!code ++]
+          if ((child as THREE.Mesh).isMesh) { // [!code ++]
+            const mesh = child as THREE.Mesh; // [!code ++]
+            mesh.castShadow = true; // [!code ++]
+            mesh.receiveShadow = true; // [!code ++]
+            meshes.push(mesh); // [!code ++]
+            meshToGroup.set(mesh, model); // [!code ++]
+          } // [!code ++]
+        }); // [!code ++]
+        scene!.add(model); // [!code ++]
+      }); // [!code ++]
+    }; // [!code ++]
+    reader.readAsArrayBuffer(file); // [!code ++]
+  }; // [!code ++]
+  input.click(); // [!code ++]
+}
+```
+
+## Interaction with Objects
+
+### Mouse Events
+
+Track pointer state for click-and-drag:
+
+```javascript
+const keysPressed = new Set<string>();
+window.addEventListener('keydown', (e) => keysPressed.add(e.code));
+window.addEventListener('keyup', (e) => keysPressed.delete(e.code));
+let isPointerDown = false; // [!code ++]
+let draggedGroup: THREE.Object3D | null = null; // [!code ++]
+window.addEventListener('pointerdown', (e) => { // [!code ++]
+  isPointerDown = true; // [!code ++]
+}); // [!code ++]
+window.addEventListener('pointerup', (e) => { // [!code ++]
+  isPointerDown = false; // [!code ++]
+  draggedGroup = null; // [!code ++]
+}); // [!code ++]
+```
+
+### Raycasting
+
+A raycaster checks which 3D objects lie along a ray from the camera through the mouse position:
+
+```javascript
+const raycaster = new THREE.Raycaster(); // [!code ++]
+const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1); // [!code ++]
+const dragIntersection = new THREE.Vector3(); // [!code ++]
+
+function handleInteraction() {
+  raycaster.setFromCamera(normalizedPointerPosition, camera!); // [!code ++]
+  const intersects = raycaster.intersectObjects(meshes); // [!code ++]
+  const hitMesh = intersects[0]?.object as THREE.Mesh | undefined; // [!code ++]
+  const hitGroup = hitMesh ? meshToGroup.get(hitMesh) ?? hitMesh : undefined; // [!code ++]
+  let dragOffsetY = 0; // [!code ++]
+```
+
+### Highlighting and Dragging
+
+Swap materials to indicate hover/click, and move objects along a plane:
+
+![Interaction](/content/threejs-workshop/Interaction.webp)
+
+```javascript
+  let dragOffsetY = 0;
+
+  if (isPointerDown && !draggedGroup && hitGroup) { // [!code ++]
+    draggedGroup = hitGroup; // [!code ++]
+    dragOffsetY = hitGroup.position.y; // [!code ++]
+  } // [!code ++]
+
+  if (isPointerDown && draggedGroup) { // [!code ++]
+    if (raycaster.ray.intersectPlane(dragPlane, dragIntersection)) { // [!code ++]
+      draggedGroup.position.x = dragIntersection.x; // [!code ++]
+      draggedGroup.position.z = dragIntersection.z; // [!code ++]
+      draggedGroup.position.y = dragOffsetY; // [!code ++]
+    } // [!code ++]
+  } // [!code ++]
+
+  const activeGroup = draggedGroup ?? hitGroup;
+  const activeMeshes = activeGroup ? getMeshesInGroup(activeGroup) : []; // [!code ++]
+
+  for (const mesh of meshes) { // [!code ++]
+    if (activeMeshes.includes(mesh)) { // [!code ++]
+      if (!originalMaterials.has(mesh)) { // [!code ++]
+        originalMaterials.set(mesh, mesh.material); // [!code ++]
+      } // [!code ++]
+      mesh.material = isPointerDown ? pickMaterial : highlightMaterial; // [!code ++]
+    } else if (originalMaterials.has(mesh)) { // [!code ++]
+      mesh.material = originalMaterials.get(mesh)!; // [!code ++]
+      originalMaterials.delete(mesh); // [!code ++]
+    } // [!code ++]
+  } // [!code ++]
+```
+
+### Debugging
+
+You can always add an arrow debug line to see if your vectors are what you think they are:
+
+```javascript
+const arrowHelper = new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 10, 0xff0000);
+scene?.add(arrowHelper);
+```
