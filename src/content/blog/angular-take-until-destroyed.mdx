@@ -15,22 +15,16 @@ In Single Page Applications lots of data are loaded asynchronously in various wa
 
 If you subscribe to an observable inside a component, you need to make sure to unsubscribe when the component is destroyed. Otherwise the subscription keeps running in the background and you end up with a memory leak.
 
-This is one of the most common sources of bugs in Angular applications. When a component subscribes to an observable (like a timer, HTTP request, or WebSocket), the subscription remains active even after the component is destroyed. This can lead to:
-
-- **Memory leaks**: Subscriptions keep consuming memory and resources
-- **Unexpected behavior**: Old subscriptions continue to update state in destroyed components
-- **Performance degradation**: Multiple overlapping subscriptions accumulate over time
+This is one of the most common sources of bugs in Angular applications. When a component subscribes to an observable (like a timer, a Subject or an Observable), the subscription remains active even after the component is destroyed. This can lead to: **Memory leaks** (Subscriptions keep consuming memory and resources), **Unexpected behavior** (Old subscriptions continue to update state in destroyed components), **Performance degradation** (Multiple overlapping subscriptions accumulate over time)
 
 This post explores different approaches to solve this problem, from manual unsubscription to modern RxJS operators.
-
-This post is organized into 5 sections:
 
 ## 1. Setup
 
 This section establishes a complete example that we'll use to demonstrate the subscription problem and progressively improve it through different solutions.
 
 ### Data Service
-We'll create a `DataService` that fetches data from an external API. This service represents any real-world data source in your Angular application (REST API, GraphQL, WebSocket, etc.):
+We'll create a `DataService` that fetches data from an external API. This service represents any data source in your Angular application (REST API, GraphQL, WebSocket, etc.):
 ```ts
 // data.service.ts
 import { inject, Injectable } from '@angular/core';
@@ -135,9 +129,8 @@ export class MyTimer implements OnInit, OnDestroy {
 
 ## 2. Memory Leak Setup
 
-Now let's implement the problematic version that demonstrates memory leaks. We'll subscribe to both observables without properly managing the subscriptions.
-
-**Key observation**: Loading data from a service is often not a problem because HTTP observables auto-complete after emitting one response. However, if you close the component before the response arrives, the pending request continues in the background. Long-running observables (timers, WebSockets, interval) are the real culprits—they emit continuously and have no natural endpoint, so subscriptions persist indefinitely without proper cleanup.
+We have the setup that is as of now producing memory leaks.
+Loading Data from a Service never was a problem. Those observables are automatically completing after emitting a response. However we will still load data even if you close the component before receiving an answer.
 
 ```ts
 // my-timer.ts
@@ -220,14 +213,7 @@ on Destroy                      my-timer.ts:42
 
 The classic solution has been the manual approach: collect all subscriptions and clean them up in the `ngOnDestroy` lifecycle hook. This was the standard pattern before RxJS operators like `takeUntil` became available.
 
-**Pros**:
-- Explicit and easy to understand
-- Works with any subscription
-
-**Cons**:
-- Boilerplate code
-- Easy to forget to add new subscriptions to the collection
-- Error-prone if you have many subscriptions
+It is Explicit and easy to understand and works with any subscription. However there is some Boilerplate code and it is easy to forget to add new subscriptions to the collection
 
 ```ts
 // my-timer.ts
@@ -295,7 +281,7 @@ on Destroy                        my-timer.ts:42
 
 ## 4. Modern way
 
-This approach uses the `takeUntil` operator from RxJS, which is much cleaner than the classic method. With `takeUntil`, you don't need to manually track subscriptions—instead, you pipe all observables through a "destroy" subject that signals when to unsubscribe.
+This approach uses the `takeUntil` operator from RxJS, which is much cleaner than the classic method. With `takeUntil`, you don't need to manually track subscriptions. Instead, you pipe all observables through a "destroy" subject that signals when to unsubscribe.
 
 **How it works**:
 1. Create a `Subject` called `destroy$` in your component
@@ -400,7 +386,7 @@ Here we see that the request is properly canceled
 
 ## 5. State of the art
 
-Angular now provides the `takeUntilDestroyed` operator (since Angular 16), which is the best approach. It's part of the `@angular/core/rxjs-interop` package and automatically unsubscribes when the component is destroyed—no manual `ngOnDestroy` needed!
+Angular now provides the `takeUntilDestroyed` operator (since Angular 16), which is the best approach. It's part of the `@angular/core/rxjs-interop` package and automatically unsubscribes when the component is destroyed. We can skip the `ngOnDestroy` entirely!
 
 **How it works**:
 - `takeUntilDestroyed()` listens to the `DestroyRef` of the current injection context
@@ -408,16 +394,7 @@ Angular now provides the `takeUntilDestroyed` operator (since Angular 16), which
 - Works in injection contexts (components, services, directives, etc.)
 - Can pass a custom `DestroyRef` if you need to tie subscriptions to a different lifecycle
 
-**Pros**:
-- Cleanest and most modern approach
-- No manual `ngOnDestroy` lifecycle hook needed
-- Automatically integrated with Angular's dependency injection
-- Works in services and anywhere with injection context
-- Best performance and least boilerplate
-
-**Cons**:
-- Requires Angular 16+
-- Still need to add the operator to each subscription
+This is the cleanest and most modern approach. There is no manual `ngOnDestroy` lifecycle hook needed. It's automatically integrated with Angular's dependency injection and works in services and anywhere with injection context
 
 Reference: [https://angular.dev/ecosystem/rxjs-interop/take-until-destroyed](https://angular.dev/ecosystem/rxjs-interop/take-until-destroyed)
 
@@ -434,33 +411,37 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';  // [!code focu
   templateUrl: './my-timer.html',
   styleUrl: './my-timer.scss'
 })
-export class MyTimer implements OnInit {  // [!code focus] // [!code ++]
+export class MyTimer implements OnInit {
   private dataService = inject(DataService);
+  // this is optional and only needed outside of injection context // [!code focus]
+  private destroyRef = inject(DestroyRef);  // [!code focus] // [!code ++]
 
   public dogs = signal<unknown>(null);
   public secondsRunning = signal(0);
 
+  private destroy$ = new Subject<void>();  // [!code focus] // [!code --]
   private timer = timer(0, 1000);
 
-  constructor() {  // [!code focus]
-    this.timer  // [!code focus]
-      .pipe(  // [!code focus]
-        takeUntilDestroyed()  // [!code focus] // [!code ++]
-      )  // [!code focus]
-      .pipe(  // [!code focus]
-        tap((value) => console.log(value))  // [!code focus]
-      )  // [!code focus]
-      .subscribe({  // [!code focus]
-        next: (value: number) => {  // [!code focus]
-          this.secondsRunning.set(value);  // [!code focus]
-        }  // [!code focus]
-      });  // [!code focus]
+  constructor() {
+    this.timer
+      .pipe(
+      .pipe(takeUntil(this.destroy$))  // [!code focus] // [!code --]
+      .pipe(takeUntilDestroyed(this.destroyRef))  // [!code focus] // [!code ++]
+      .pipe(takeUntilDestroyed()) // in an injection context we don't even need that  // [!code focus] // [!code highlight]
+        tap((value) => console.log(value))
+      )
+      .subscribe({
+        next: (value: number) => {
+          this.secondsRunning.set(value);
+        }
+      });
   }
 
   public ngOnInit(): void {
     this.dataService
       .getDogs()
-      .pipe(takeUntilDestroyed())  // [!code focus] // [!code ++]
+      .pipe(takeUntil(this.destroy$))  // [!code focus] // [!code --]
+      .pipe(takeUntilDestroyed(this.destroyRef))  // [!code focus] // [!code ++]
       .subscribe({
         next: (data: unknown) => {
           console.log('Dogs received:', data);
@@ -468,6 +449,12 @@ export class MyTimer implements OnInit {  // [!code focus] // [!code ++]
         }
       });
   }
+
+  public ngOnDestroy(): void { // [!code focus] // [!code --]
+    console.log('on Destroy');  // [!code focus] // [!code --]
+    this.destroy$.next();  // [!code focus] // [!code --]
+    this.destroy$.complete();  // [!code focus] // [!code --]
+  } // [!code focus] // [!code --]
 }
 ```
 
@@ -495,24 +482,10 @@ Dogs received: (2) [{…}, {…}]    my-timer.ts:46
 
 # A Few Things To Keep In Mind
 
-- **`takeUntilDestroyed` is an operator**: It must be part of a pipe chain; you cannot use it standalone on an observable. Always place it in a `.pipe()` call.
-  
-- **Works with subscription-based patterns**: `takeUntilDestroyed` only works with actual `.subscribe()` calls. If you're using the `async` pipe in your template (`{{ observable$ | async }}`), you don't need it because the `async` pipe automatically unsubscribes when the component is destroyed.
-  
-- **Compatible with higher-order operators**: If you use `switchMap`, `mergeMap`, `concatMap`, or other higher-order operators, `takeUntilDestroyed` still works correctly. It completes the outer observable, which automatically cancels any inner subscriptions.
-  
-- **Injection context required**: `takeUntilDestroyed()` without arguments works only within an Angular injection context (components, services, directives). If you need to use it outside an injection context, you must explicitly pass a `DestroyRef`: `takeUntilDestroyed(destroyRef)`.
-  
-- **Works in services too**: You can use `takeUntilDestroyed` in services by injecting `DestroyRef`. This is useful for managing subscriptions in service methods.
+- `takeUntilDestroyed` is an operator, so it needs to be part of a `pipe`. You cannot use it standalone.
+- It only works with observables. If you are using `async` pipes in your template, you do not need it at all because the `async` pipe unsubscribes automatically.
+- If you are using `switchMap` or other higher-order operators, `takeUntilDestroyed` will still work as expected because it completes the outer observable.
 
 # Summary
 
-**`takeUntilDestroyed` is the modern standard** for managing subscriptions in Angular. Here's a quick comparison:
-
-| Approach | Boilerplate | Error-prone | Scalability |
-|----------|------------|-------------|-------------|
-| Manual unsubscribe | High | High | Poor |
-| `takeUntil` + Subject | Medium | Medium | Fair |
-| `takeUntilDestroyed` | Low | Low | Excellent |
-
-If you're still using the classic `Subject` + `takeUntil` pattern or manual unsubscription, it's absolutely worth migrating to `takeUntilDestroyed`. It's cleaner, less error-prone, requires zero boilerplate, and works seamlessly in components, services, and directives. With Angular 16+, there's no reason not to use it.
+`takeUntilDestroyed` is a small but very useful operator that removes a lot of boilerplate from your Angular components. If you are still using the `Subject` + `takeUntil` pattern, it is worth switching to this operator. It is cleaner, less error-prone, and it works in services too.
