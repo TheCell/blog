@@ -424,10 +424,9 @@ export class MyTimer implements OnInit {
 
   constructor() {
     this.timer
-      .pipe(
       .pipe(takeUntil(this.destroy$))  // [!code focus] // [!code --]
-      .pipe(takeUntilDestroyed(this.destroyRef))  // [!code focus] // [!code ++]
       .pipe(takeUntilDestroyed()) // in an injection context we don't even need that  // [!code focus] // [!code highlight]
+      .pipe(takeUntilDestroyed(this.destroyRef)  // [!code focus] // [!code ++]
         tap((value) => console.log(value))
       )
       .subscribe({
@@ -478,6 +477,59 @@ Dogs received: (2) [{…}, {…}]    my-timer.ts:46
 1                                my-timer.ts:30
 2                                my-timer.ts:30
 # component killed. No Dogs log
+```
+
+### cleaned up code
+
+this is just the cleaned up code convenient to read
+
+```ts
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { tap, timer } from 'rxjs';
+import { DataService } from '../data.service';
+import { JsonPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+@Component({
+  selector: 'app-my-timer',
+  imports: [JsonPipe],
+  templateUrl: './my-timer.html',
+  styleUrl: './my-timer.scss'
+})
+export class MyTimer implements OnInit {
+  private dataService = inject(DataService);
+  private destroyRef = inject(DestroyRef);
+
+  public dogs = signal<unknown>(null);
+  public secondsRunning = signal(0);
+
+  private timer = timer(0, 1000);
+
+  constructor() {
+    this.timer
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap((value) => console.log(value))
+      )
+      .subscribe({
+        next: (value: number) => {
+          this.secondsRunning.set(value);
+        }
+      });
+  }
+
+  public ngOnInit(): void {
+    this.dataService
+      .getDogs()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data: unknown) => {
+          console.log('Dogs received:', data);
+          this.dogs.set(data);
+        }
+      });
+  }
+}
 ```
 
 # A Few Things To Keep In Mind
